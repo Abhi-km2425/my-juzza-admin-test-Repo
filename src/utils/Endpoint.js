@@ -12,8 +12,13 @@ export const UnlistCategory = "/api/admin/unlist-category"; //=>id:
 export const ListCategory = "/api/admin/list-category"; //=>id:
 export const UpdateCategory = "/api/admin/update-category"; 
 
+// Orders
+export const GetAllOrders = "/api/admin/all-orders";
+export const GetAOrders = "/api/admin/order/details";
+
 
 export const GetDashboard = "/api/admin/dashboard";
+
 
 // staff 
 export const staffCreateRoute = "/api/staff/create"

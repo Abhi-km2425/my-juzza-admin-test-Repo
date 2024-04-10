@@ -42,12 +42,6 @@ const sideBar = [
     path: "/admin/order",
     icon: <CiShoppingCart size={23} />,
   },
-  {
-    id: 9,
-    name: "Settings",
-    path: "/settings",
-    icon: <IoSettingsOutline size={23} />,
-  },
 ];
 // ------------------------------------------------------
 

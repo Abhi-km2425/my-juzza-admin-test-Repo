@@ -120,13 +120,6 @@ const Header = ({ sideData }) => {
           <h1 className="text-primary font-bold text-xl">Admin DashBoard</h1>
         </div>
         <div className="flex items-center gap-2">
-          <div>
-            <img
-              src="/assets/images/avatar.png"
-              alt="profile"
-              className="w-10 bg-black rounded-full"
-            />
-          </div>
           <div onClick={LogoutHandler}>
             <CiLogin
               size={40}

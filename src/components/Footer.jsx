@@ -6,7 +6,7 @@ const Footer = () => {
           <span className="text-sm  sm:text-center ">
             © 2024{" "}
             <a href="#" className="hover:underline">
-             Thanal
+              Juza
             </a>
             . All Rights Reserved.
           </span>

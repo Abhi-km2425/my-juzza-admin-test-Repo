@@ -7,10 +7,10 @@ import ProductList from "./pages/products/ProductList";
 import ProductView from "./pages/products/ProductView";
 import AuthProtector from "./protectors/AuthProtector";
 import AdminProtector from "./protectors/AdminProtector";
-import Settings from "./pages/settings/Settings";
 import CategoryList from "./pages/category/CategoryList";
 import UsersList from "./pages/UsersList";
 import OrdersList from "./pages/order/OrdersList";
+import DetailedView from "./pages/order/DetailedView";
 
 function App() {
 
@@ -31,6 +31,7 @@ function App() {
               <Route path="/admin/category" element={<CategoryList />} />
               <Route path="/admin/users" element={<UsersList />} />
               <Route path="/admin/order" element={<OrdersList />} />
+              <Route path="/admin/order/view/:id/:userid" element={<DetailedView />} />
             </Route>
           </Routes>
         </Layout>

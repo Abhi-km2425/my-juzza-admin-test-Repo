@@ -1,0 +1,19 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+
+
+const AuthProtector = () => {
+    const user = useSelector((state) => state.auth.userInfo)
+    console.log("user",user)
+
+    // const user = {role:"admin"}
+
+    return (
+      user?.role === "admin"
+        ? <Navigate to="/dashboard" replace />
+        : <Outlet />
+    )
+}
+
+export default AuthProtector

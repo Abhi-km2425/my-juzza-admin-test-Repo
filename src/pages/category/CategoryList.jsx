@@ -58,7 +58,6 @@ const CategoryList = () => {
   };
 
   const ListCata = async () => {
-    console.log("i am here");
     setLoading(true);
     try {
       const response = await axios.post(
@@ -128,8 +127,6 @@ const CategoryList = () => {
         </div>
       </div>
 
-      {loading && <ReqLoader />}
-
       {/* Delete Modal */}
       {unlistModal && (
         <DeleteModal
@@ -164,6 +161,8 @@ const CategoryList = () => {
           setLoading={setLoading}
         />
       )}
+
+      {loading && <ReqLoader />}
     </div>
   );
 };

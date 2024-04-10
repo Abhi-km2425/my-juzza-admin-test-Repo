@@ -18,7 +18,6 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
         categoryName: category,
       };
       const response = await axios.post(UpdateCategory, categoryName);
-      console.log(response);
       toast.success(response?.data?.msg);
       cb();
       editModal(false);
@@ -29,9 +28,9 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
       setLoading(false);
     }
   };
-  
+
   return (
-    <div className="fixed top-0 left-0 w-full h-screen bg-black/50 flex items-center justify-center z-50 ">
+    <div className="fixed top-0 left-0 w-full h-screen bg-black/50 flex items-center justify-center z-10 ">
       <div className="relative bg-white w-full  md:w-1/2 rounded-lg p-5 md:p-10 m-5 flex flex-col gap-[2vh]">
         <h1 className="font-bold text-center text-xl text-primary">
           Edit Category

@@ -52,13 +52,12 @@ const ProductList = () => {
     setAddProductModal(true);
   };
 
-  useEffect(() => {
+  const initialData = async () => {
     setLoading(true);
-    axios
+    await axios
       .get(GetProducts)
       .then((res) => {
         setData(res?.data);
-        console.log(res);
       })
       .catch((error) => {
         console.log(error);
@@ -66,6 +65,10 @@ const ProductList = () => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    initialData();
   }, []);
 
   return (

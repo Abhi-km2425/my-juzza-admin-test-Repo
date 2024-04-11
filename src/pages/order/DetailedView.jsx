@@ -1,11 +1,12 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import ReqLoader from "../../components/loader/ReqLoader";
-import { GetAOrders } from "../../utils/Endpoint";
+import { GetAOrders, UpdateOrderStatus } from "../../utils/Endpoint";
 import { MdCall, MdEmail } from "react-icons/md";
-import DetailedViewTable from "../../components/tables/DetailedViewTable";
 import { FaCalendarAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
+import DetailedViewTable from "../../components/tables/DetailedViewTable";
+import ReqLoader from "../../components/loader/ReqLoader";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const DetailedView = () => {
   const [loading, setLoading] = useState(false);
@@ -31,6 +32,25 @@ const DetailedView = () => {
         setLoading(false);
       });
   };
+
+  const inputChangeHandler = async (e) => {
+    setLoading(true);
+    const selectValue = { status: e.target.value };
+    try {
+      const response = await axios.put(
+        `${UpdateOrderStatus}/${id}`,
+        selectValue
+      );
+      console.log(response);
+      toast.success("Successfully Updated");
+      initialData();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     initialData();
   }, []);
@@ -58,13 +78,14 @@ const DetailedView = () => {
         <div className="w-full md:w-4/6">
           <DetailedViewTable products={data} />
         </div>
-        <div className="flex flex-col  gap-2">
+        <div className="flex flex-col gap-2 w-full md:w-2/6">
           <div className="border rounded p-5 bg-white shadow-lg ">
             <h1 className="font-semibold  mb-3 text-start">
               Update the status
             </h1>
             <select
-              name=""
+              onChange={inputChangeHandler}
+              name="status"
               id=""
               className=" border focus:outline-none p-2 w-full rounded py-3"
             >
@@ -79,9 +100,7 @@ const DetailedView = () => {
               <h1 className="font-semibold mb-3">Customer</h1>
               <h1 className="capitalize">{data?.userDetails?.name}</h1>
             </div>
-
             <hr />
-
             <div className="my-3 flex flex-col gap-2">
               <div className="flex gap-2 items-center ">
                 <MdEmail className="text-gray-400" />
@@ -92,15 +111,12 @@ const DetailedView = () => {
                 <h1>{data?.userDetails?.number}</h1>
               </div>
             </div>
-
             <hr />
-
             <div className="text-start mt-5">
               <h1 className="font-semibold  mb-3 ">Shipping Address</h1>
               <p>
-                {data?.address?.houseName}, <br /> {data?.address?.street},{" "}
-                <br /> {data?.address?.city}, <br />
-                {data?.address?.phone} <br />
+                {data?.address?.houseName}, {data?.address?.street}, <br />{" "}
+                {data?.address?.city}, {data?.address?.phone} <br />
                 pin : {data?.address?.postalCode}
               </p>
             </div>

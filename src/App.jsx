@@ -11,6 +11,7 @@ import CategoryList from "./pages/category/CategoryList";
 import OrdersList from "./pages/order/OrdersList";
 import DetailedView from "./pages/order/DetailedView";
 import UsersList from "./pages/users/UsersList";
+import AddNewProduct from "./pages/products/AddNewProduct";
 
 function App() {
 
@@ -27,7 +28,7 @@ function App() {
             <Route path="/" element={<AdminProtector />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/products" element={<ProductList />} />
-              <Route path="/admin/add-products" element={<ProductList />} />
+              <Route path="/admin/products/add-product" element={<AddNewProduct />} />
               <Route path="/admin/products/view" element={<ProductView />} />
               <Route path="/admin/category" element={<CategoryList />} />
               <Route path="/admin/users" element={<UsersList />} />

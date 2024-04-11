@@ -4,25 +4,14 @@ import ProductTable from "../../components/tables/ProductTable";
 import Pagination from "../../components/Pagination";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { GetProducts } from "../../utils/Endpoint";
-import AddProduct from "../../components/modals/AddProduct";
+import { Link } from "react-router-dom";
 
 const ProductList = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [addProductModal, setAddProductModal] = useState(false);
   const axios = useAxiosPrivate();
-  const [productData, setProductData] = useState({
-    p_name: "",
-    category: "",
-    price: "",
-    c_offerPrice: "",
-    productOffer: "",
-    finalPrice: "",
-    quantity: "",
-    weight: "",
-    description: "",
-  });
+
 
   // Edit the table value
   const EditHandler = async (data) => {
@@ -46,10 +35,6 @@ const ProductList = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const AddProductHandler = async () => {
-    setAddProductModal(true);
   };
 
   const initialData = async () => {
@@ -77,14 +62,13 @@ const ProductList = () => {
         <h1 className="text-primary font-bold md:text-2xl mb-6 mt-3">
           <div>ProductList</div>
         </h1>
-        <div>
+        <Link to={'/admin/products/add-product'}>
           <button
-            onClick={AddProductHandler}
             className="bg-primary text-white text-sm p-3 rounded hover:scale-105 ease-in-out duration-300 "
           >
             Add New Product
           </button>
-        </div>
+        </Link>
       </div>
 
       <div className="w-full">
@@ -99,9 +83,6 @@ const ProductList = () => {
         </div>
       </div>
       {loading && <ReqLoader />}
-      {addProductModal && (
-        <AddProduct setAddProductModal={setAddProductModal} />
-      )}
     </div>
   );
 };

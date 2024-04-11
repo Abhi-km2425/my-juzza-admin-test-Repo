@@ -6,6 +6,7 @@ export const loginRoute = "/api/auth/admin-login";
 export const logoutRoute = "/api/auth/admin-logout";
 
 export const GetProducts = "/api/admin/get-products";
+export const AddProducts = "/api/admin/add-product";
 
 export const GetCategory = "/api/admin/categories";
 export const AddCategories = "/api/admin/add-category";

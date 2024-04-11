@@ -18,6 +18,9 @@ const useAxiosPrivate = () => {
                 if (!config.headers['Authorization']) {
                     config.headers['Authorization'] = `Bearer ${accessToken}`;
                 }
+                if (config.url === '/api/admin/add-product') {
+                    config.headers['Content-Type'] = 'multipart/form-data';
+                }
                 return config;
             }, (error) => Promise.reject(error)
         );

@@ -1,8 +1,6 @@
 import { IoClose } from "react-icons/io5";
 
 const DetailedViewTable = ({ products }) => {
-  const cartProduct = products?.order;
-  console.log(products);
   return (
     <div className="relative w-full overflow-x-auto border border-[#EDEDED]">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

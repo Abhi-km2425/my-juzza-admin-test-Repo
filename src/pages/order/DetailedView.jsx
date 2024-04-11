@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import DetailedViewTable from "../../components/tables/DetailedViewTable";
 import ReqLoader from "../../components/loader/ReqLoader";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { formatDate } from "../../utils/DateFormat";
 
 const DetailedView = () => {
   const [loading, setLoading] = useState(false);
@@ -55,23 +56,25 @@ const DetailedView = () => {
     initialData();
   }, []);
 
-  console.log(data);
   return (
     <div className="h-full w-full flex flex-col items-start mb-10">
       <div className="w-full flex flex-col justify-between items-start">
         <h1 className="text font-bold md:text-2xl mt-3">
           <span className="text-primary">Order</span> #{id}
         </h1>
-        <h1 className="font-medium  text-gray-500 capitalize flex  items-center gap-2 mt-2">
-          <FaCalendarAlt />
-          monday 04-march-2024
-          <span className="bg-yellow-300 text-sm text-white px-5 rounded p-1">
-            {data?.order[0]?.payment?.method}
-          </span>
-          <span className="bg-sky-300 text-sm text-white px-5 rounded p-1">
-            {data?.orderStatus[0]}
-          </span>
-        </h1>
+        {data?.order && data.order[0] && (
+          <h1 className="font-medium text-gray-500 capitalize flex items-center gap-2 mt-2">
+            <FaCalendarAlt />
+            {formatDate(data.order[0].createdAt)}
+            {/* monday 04-march-2024 */}
+            <span className="bg-yellow-300 text-sm text-white px-5 rounded p-1">
+              {data?.order[0]?.payment?.method}
+            </span>
+            <span className="bg-sky-300 text-sm text-white px-5 rounded p-1">
+              {data?.orderStatus[0]}
+            </span>
+          </h1>
+        )}
       </div>
 
       <div className="w-full mt-6 flex flex-col md:flex-row gap-2">

@@ -18,5 +18,9 @@ export const GetAllOrders = "/api/admin/all-orders";
 export const GetAOrders = "/api/admin/order/details";
 export const UpdateOrderStatus = "/api/admin/order"; //=> id
 
+// Users
+export const GetUsers= "/api/admin/customers";
+export const BlockUser= "/api/admin/block-user";//=>id
+export const UnblockUser= "/api/admin/unblock-user";//=>id
 
 export const GetDashboard = "/api/admin/dashboard";

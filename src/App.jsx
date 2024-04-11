@@ -8,9 +8,9 @@ import ProductView from "./pages/products/ProductView";
 import AuthProtector from "./protectors/AuthProtector";
 import AdminProtector from "./protectors/AdminProtector";
 import CategoryList from "./pages/category/CategoryList";
-import UsersList from "./pages/UsersList";
 import OrdersList from "./pages/order/OrdersList";
 import DetailedView from "./pages/order/DetailedView";
+import UsersList from "./pages/users/UsersList";
 
 function App() {
 
@@ -27,6 +27,7 @@ function App() {
             <Route path="/" element={<AdminProtector />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/products" element={<ProductList />} />
+              <Route path="/admin/add-products" element={<ProductList />} />
               <Route path="/admin/products/view" element={<ProductView />} />
               <Route path="/admin/category" element={<CategoryList />} />
               <Route path="/admin/users" element={<UsersList />} />

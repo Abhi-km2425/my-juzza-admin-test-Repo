@@ -6,7 +6,6 @@ import { loginRoute } from "../utils/Endpoint";
 import { setUser } from "../redux/slices/AuthSlicer";
 import { setAccessToken, setRefreshToken } from "../redux/slices/TokenReducer";
 import bgIMge from "../../public/assets/login/cover pic.png";
-import text from "../../public/assets/login/text.png";
 import logo from "../../public/assets/Logo/logo-juzza.png";
 import axios from "../api/axios";
 
@@ -142,22 +141,12 @@ const Login = () => {
         </div>
 
         <div className="w-full h-full hidden md:flex relative top-0  flex-col items-center justify-center">
-          <img
-            src={text}
-            alt="bg-image"
-            className="w-[500px] object-cover absolute text-center"
-          />
+
           <img
             src={bgIMge}
             alt="bg-image"
             className="w-full h-[630px] 2xl:h-full object-cover"
           />
-          <div className="bg-primary w-full h-[100px] flex items-center justify-center text-white">
-            <h1 className="text-center md:w-2/3 text-sm">
-              Thanal undertakes different activities to improve the quality of
-              life of patients needing palliative and paraplegic care.
-            </h1>
-          </div>
         </div>
       </div>
     </div>

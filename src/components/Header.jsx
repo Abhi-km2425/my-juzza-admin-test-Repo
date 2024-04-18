@@ -117,7 +117,7 @@ const Header = ({ sideData }) => {
         </div>
 
         <div className="">
-          <h1 className="text-primary font-bold text-xl">Admin DashBoard</h1>
+          <h1 className="font-bold text-2xl">Admin DashBoard</h1>
         </div>
         <div className="flex items-center gap-2">
           <div onClick={LogoutHandler}>

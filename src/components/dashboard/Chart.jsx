@@ -1,67 +1,78 @@
 import { useEffect, useState } from "react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend} from "recharts";
-// import axiosInstance from "../../utils/AxiosInstance";
-// import { getVisitsChartRoute } from "../../utils/Endpoint";
+import Chart from "react-apexcharts";
+
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
-
-const Chart = ({locality}) => {
+const ChartData = () => {
   const axiosInstance = useAxiosPrivate();
 
-  const [data, setData] = useState([])
-  const [interval, setInterval] = useState("week")
+  const [data, setData] = useState([]);
+  const [interval, setInterval] = useState("week");
 
   const getVisitChart = async () => {
-    await axiosInstance.get(`${"getVisitsChartRoute"}?interval=${interval}&locality=${locality}`)
+    await axiosInstance
+      .get(``)
       .then((res) => {
-        console.log(res?.data)
-        setData(res?.data)
+        console.log(res?.data);
+        setData(res?.data);
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
-    getVisitChart()
-  }, [interval, locality])
+    getVisitChart();
+  }, []);
 
+  const [state, setState] = useState({
+    options: {
+      colors: ["#E91E63", "#FF9800"],
+      chart: {
+        id: "basic-bar",
+      },
+      xaxis: {
+        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+      },
+    },
+    series: [
+      {
+        name: "People Born",
+        data: [30, 40, 45, 50, 49, 60, 70, 91],
+      },
+      {
+        name: "People Died",
+        data: [3, 60, 35, 80, 49, 70, 20, 81],
+      },
+    ],
+  });
 
   return (
-    <div className="flex flex-col gap-[4vh] p-[5]">
-      <div className="flex justify-between items-center" >
-        <h1 className="font-semibold text-primary capitalize">{interval}-wise Completed Visits</h1>
+    <div className="w-full flex flex-col gap-[4vh] p-[5]">
+      <div className="flex justify-between items-center">
+        <h1 className="font-semibold text-primary capitalize">
+          {interval}-wise Completed Visits
+        </h1>
 
         <select
-            className="min-w-fit p-2 px-4
+          className="min-w-fit p-2 px-4
           rounded-md cursor-pointer outline-none shadow-lg"
-            value={interval}
-            onChange={(e) => setInterval(e.target.value)}
-          >
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-          </select>
+          value={interval}
+          onChange={(e) => setInterval(e.target.value)}
+        >
+          <option value="week">Week</option>
+          <option value="month">Month</option>
+        </select>
       </div>
-      <ResponsiveContainer width="100%" height={400} >
-        <BarChart data={data} width={300} height={400}>
-          <XAxis dataKey="name" />
-          <YAxis dataKey="visit" />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="visit" fill="#007a3f" />
-        </BarChart>
-
-        {/* <LineChart width={400} height={400} data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-          <XAxis dataKey="name" />
-          <Tooltip />
-          <CartesianGrid stroke="#f5f5f5" />
-          <Line type="monotone" dataKey="visit" stroke="#ff7300" yAxisId={0} />
-          <Line type="monotone" dataKey="visit" stroke="#387908" yAxisId={1} />
-        </LineChart> */}
-
-      </ResponsiveContainer>
+      <div className="w-full ">
+        <Chart
+          options={state.options}
+          series={state.series}
+          type="bar"
+        />
+      </div>
     </div>
   );
 };
 
-export default Chart;
+export default ChartData;

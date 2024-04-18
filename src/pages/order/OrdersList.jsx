@@ -16,7 +16,6 @@ const OrdersList = () => {
   // Delete from the Table
   const DetailedViewHandler = async (data) => {
     setLoading(true);
-    console.log(data);
     navigate(`/admin/order/view/${data?._id}/${data?.user?._id}`);
   };
 
@@ -25,7 +24,6 @@ const OrdersList = () => {
     await axios
       .get(GetAllOrders)
       .then((res) => {
-        console.log(res);
         setData(res?.data?.orderList);
       })
       .catch((error) => {

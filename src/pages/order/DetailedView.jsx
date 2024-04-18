@@ -42,7 +42,6 @@ const DetailedView = () => {
         `${UpdateOrderStatus}/${id}`,
         selectValue
       );
-      console.log(response);
       toast.success("Successfully Updated");
       initialData();
     } catch (error) {

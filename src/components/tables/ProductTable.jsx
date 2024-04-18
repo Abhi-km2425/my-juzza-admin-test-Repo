@@ -3,8 +3,10 @@ import {
   IoTrashBinOutline,
   IoOpenOutline,
 } from "react-icons/io5";
+import { FaListCheck } from "react-icons/fa6";
+import { MdFilterListOff } from "react-icons/md";
 
-const ProductTable = ({ data, clickEdit, clickDelete, page }) => {
+const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandler }) => {
   return (
     <div className="overflow-x-auto overflow-y-auto rounded-lg shadow-lg text-sm bg-white">
       <table className="min-w-full bg-white ">
@@ -48,13 +50,24 @@ const ProductTable = ({ data, clickEdit, clickDelete, page }) => {
                       className="text-blue-500"
                       onClick={() => clickEdit(row)}
                     />
+
+                    <div>
+                      {row?.availability ? (
+                        <FaListCheck
+                          className="text-green-500"
+                          onClick={() => clickDelete(row)}
+                        />
+                      ) : (
+                        <MdFilterListOff
+                          className="text-red-500"
+                          onClick={() => clickDelete(row)}
+                        />
+                      )}
+                    </div>
+
                     <IoTrashBinOutline
                       className="text-red-500"
-                      onClick={() => clickDelete(row)}
-                    />
-                    <IoOpenOutline
-                      className="text-red-500"
-                      onClick={() => clickDelete(row)}
+                      onClick={() => PermanentDeleteHandler(row)}
                     />
                   </div>
                 }

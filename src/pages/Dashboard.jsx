@@ -1,15 +1,14 @@
 import ReqLoader from "../components/loader/ReqLoader";
 import Cards from "../components/dashboard/Cards";
+import Chart from "../components/dashboard/Chart";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 import { useEffect, useState } from "react";
 import { FaCartArrowDown, FaRegMoneyBillAlt } from "react-icons/fa";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { GetDashboard } from "../utils/Endpoint";
-import { FcSalesPerformance } from "react-icons/fc";
 import { MdOutlineIncompleteCircle } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { BsFillCartXFill } from "react-icons/bs";
-import Chart from "../components/dashboard/Chart";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);

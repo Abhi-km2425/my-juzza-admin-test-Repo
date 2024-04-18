@@ -27,7 +27,7 @@ const ChartData = () => {
         },
         series: [
           {
-            name: "Order Status",
+            name: "Status",
             data: value,
           },
         ],

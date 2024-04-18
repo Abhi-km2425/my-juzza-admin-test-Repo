@@ -95,6 +95,7 @@ const AddNewProduct = () => {
       });
       console.log(response);
     } catch (error) {
+      toast.error(error?.response?.data?.msg);
       console.log(error);
     } finally {
       setLoading(false);

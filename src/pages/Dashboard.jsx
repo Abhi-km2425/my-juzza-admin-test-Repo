@@ -81,7 +81,7 @@ const Dashboard = () => {
         ))}
       </div>
       <div className=" flex w-full flex-wrap items-center mt-10">
-        <Chart />
+        <Chart data={cards} />
       </div>
       {loading && <ReqLoader />}
     </div>

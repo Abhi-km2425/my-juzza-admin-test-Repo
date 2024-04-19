@@ -4,7 +4,7 @@ import {
   IoOpenOutline,
 } from "react-icons/io5";
 import { FaListCheck } from "react-icons/fa6";
-import { MdFilterListOff } from "react-icons/md";
+import { MdChecklistRtl, MdFilterListOff } from "react-icons/md";
 
 const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandler }) => {
   return (
@@ -53,7 +53,7 @@ const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandl
 
                     <div>
                       {row?.availability ? (
-                        <FaListCheck
+                        <MdChecklistRtl 
                           className="text-green-500"
                           onClick={() => clickDelete(row)}
                         />

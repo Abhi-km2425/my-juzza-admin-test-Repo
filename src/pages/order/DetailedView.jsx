@@ -95,6 +95,7 @@ const DetailedView = () => {
               <option value="processing">Processing</option>
               <option value="shipped">Shipped</option>
               <option value="delivered">Delivered</option>
+              <option value="re-funded">Re-funded</option>
             </select>
           </div>
           <div className="border rounded p-5 bg-white shadow-lg ">

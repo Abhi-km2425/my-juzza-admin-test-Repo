@@ -8,6 +8,12 @@ import DetailedViewTable from "../../components/tables/DetailedViewTable";
 import ReqLoader from "../../components/loader/ReqLoader";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { formatDate } from "../../utils/DateFormat";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { IoDownloadOutline } from "react-icons/io5";
+import PdfReport from "./PdfReport";
+import { useRef } from "react";
+import { useReactToPrint } from "react-to-print"
+import Printable from './Printable';
 
 const DetailedView = () => {
   const [loading, setLoading] = useState(false);
@@ -55,12 +61,46 @@ const DetailedView = () => {
     initialData();
   }, []);
 
+
+  const contentToPrint = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    documentTitle: "Daily Report",
+    onBeforePrint: () => console.log("before printing..."),
+    onAfterPrint: () => console.log("after printing..."),
+    removeAfterPrint: true,
+  });
+
   return (
     <div className="h-full w-full flex flex-col items-start mb-10">
       <div className="w-full flex flex-col justify-between items-start">
-        <h1 className="text font-bold md:text-2xl mt-3">
-          <span className="text-primary">Order</span> #{id}
-        </h1>
+        <div className="w-full text font-bold md:text-2xl mt-3 flex justify-between">
+          <span><span className="text-primary">Order</span>#{id}</span>
+
+          <div className="flex items-center">
+          <button
+              onClick={() => {
+                handlePrint(null, () => contentToPrint.current);
+              }}
+              className="flex-initial bg-primary text-sm text-white font-semibold px-[2vw] py-[1vh] mr-[2vw] rounded-md"
+            >
+              Print
+            </button>
+
+             {/* Hidden Component to Print */}
+             <div className="hidden">
+              <Printable data={data} ref={contentToPrint} />
+            </div>
+
+            <PDFDownloadLink document={<PdfReport data={data} />} fileName={`Daily-Report.pdf`}>
+              <button
+                className="w-[50%] sm:w-1/6 min-w-fit bg-primary text-base text-white flex items-center justify-around px-[1vw] py-[1vh] rounded-lg">
+                Download <IoDownloadOutline />
+              </button>
+            </PDFDownloadLink>
+          </div>
+
+        </div>
         {data?.order && data.order[0] && (
           <h1 className="font-medium text-gray-500 capitalize flex items-center gap-2 mt-2">
             <FaCalendarAlt />
@@ -74,6 +114,10 @@ const DetailedView = () => {
             </span>
           </h1>
         )}
+
+
+
+
       </div>
 
       <div className="w-full mt-6 flex flex-col md:flex-row gap-2">

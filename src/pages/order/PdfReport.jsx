@@ -78,7 +78,7 @@ const PdfReport = ({ data }) => {
             <Page size="A4" style={styles.page}>
 
                 <View style={styles.section}>
-                    <Text style={styles.heading}>Order Report</Text>
+                    <Text style={styles.heading}>Invoice</Text>
 
                     {data
                         ?

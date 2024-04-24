@@ -1,9 +1,5 @@
 import React from 'react';
 import { Document, Page, Text, View, Rect, StyleSheet } from '@react-pdf/renderer';
-import { formatDate } from "../../utils/DateFormat";
-
-
-// Create styles
 
 const styles = StyleSheet.create({
     page: {
@@ -27,11 +23,14 @@ const styles = StyleSheet.create({
 
     },
     subheading: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 'bold',
-        marginTop: 10,
+        marginTop: 5,
         marginBottom: 5,
-        textDecoration: 'underline',
+        marginLeft:13,
+        // textDecoration: 'underline',
+        // textAlign:'left',
+        alignSelf:'flex-start'
     },
     paragraph: {
         fontSize: 12,
@@ -41,32 +40,68 @@ const styles = StyleSheet.create({
     box: {
         width: '550px',
         height: 'auto',
-        border: '2px solid black',
         padding: 10,
         margin: 5,
     },
-
+    toprect: {
+        width: '550px',
+        height: 'auto',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    topleftrect: {
+        width: '250px',
+        height: 'auto',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    toprightrect: {
+        width: '250px',
+        height: 'auto',
+        display: 'flex',
+        flexDirection: 'column'
+    },
     table: {
         width: '100%',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        borderColor: '#000',
+        borderTop:'1px solid #000',
+        marginTop: 10,
         marginBottom: 10,
     },
     tableRow: {
         flexDirection: 'row',
+        borderBottom:'1px solid #000',
     },
     tableCell: {
         width: '20%',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        borderColor: '#000',
         padding: 4,
         textAlign: 'center',
         fontSize: 12,
         lineHeight: 1.5,
         color: '#000000',
+        textAlign:'left'
     },
+    boldSpan: {
+        fontSize: 12,
+        lineHeight: 1.5,
+        color: '#000000',
+        fontWeight: 'extrabold',
+        textAlign: 'left'
+    },
+    boldRightSmSpan: {
+        fontSize: 12,
+        lineHeight: 1.5,
+        color: '#000000',
+        fontWeight: 'extrabold',
+        textAlign: 'right'
+    },
+    boldRightLgSpan: {
+        fontSize: 14,
+        lineHeight: 1.8,
+        color: '#000000',
+        fontWeight: 'extrabold',
+        textAlign: 'right'
+    }
 });
 
 
@@ -79,23 +114,34 @@ const PdfReport = ({ data }) => {
 
                 <View style={styles.section}>
                     <Text style={styles.heading}>Invoice</Text>
+                    <Text style={styles.subheading}>Sold By: JUZA Foods, Urangattiri, Kerala 673639, India </Text>
 
                     {data
                         ?
-
                         <Rect style={styles.box}>
-                            <Text style={styles.paragraph}>Name : {data?.userDetails?.name}</Text>
-                            <Text style={styles.paragraph}>Email : {data?.userDetails?.email}</Text>
-                            <Text style={styles.paragraph}>Phone : {data?.userDetails?.number}</Text>
-                            <Text style={styles.paragraph}>Ordered Date : {formatDate(data.order[0].createdAt)}</Text>
-                            <Text style={styles.paragraph}>Shipping Address : {data?.address?.houseName},
-                                {data?.address?.street}, {data?.address?.city}, {data?.address?.state},
-                                {data?.address?.postalCode}, {data?.address?.phone},</Text>
+                            <Rect style={styles.toprect}>
+                                <Rect style={styles.topleftrect}>
+                                    <Text style={styles.paragraph}>Order Id : {data?.order[0]._id}</Text>
+                                    <Text style={styles.paragraph}>Order Date :{data?.order[0].createdAt?.split('T')[0]?.split('-').reverse().join('-')}</Text>
+                                    <Text style={styles.paragraph}>Invoice Date :{new Date().toISOString().split('T')[0]?.split('-').reverse().join('-')}</Text>
+                                    <Text style={styles.paragraph}>Total Items :{data?.orderProducts?.length}</Text>
+                                </Rect>
+
+                                <Rect style={styles.toprightrect}>
+                                    <Text style={styles.boldSpan}>Ship To :</Text>
+                                    <Text style={styles.boldSpan}>{data?.address?.name}</Text>
+                                    <Text style={styles.paragraph}>{data?.address?.houseName},
+                                        {data?.address?.street}</Text>
+                                    <Text style={styles.paragraph}>{data?.address?.city}, {data?.address?.state},
+                                        {data?.address?.postalCode}</Text>
+                                    <Text style={styles.paragraph}>Phone : {data?.address?.phone}</Text>
+                                </Rect>
+                            </Rect>
 
 
                             <View style={styles.table}>
                                 <View style={styles.tableRow}>
-                                    <Text style={styles.tableCell}>Product Name</Text>
+                                    <Text style={styles.tableCell}>Product </Text>
                                     <Text style={styles.tableCell}>Weight</Text>
                                     <Text style={styles.tableCell}>Price</Text>
                                     <Text style={styles.tableCell}>Quantity</Text>
@@ -116,11 +162,11 @@ const PdfReport = ({ data }) => {
 
                             </View>
 
+                            <Text style={styles.boldRightLgSpan}>Grand Total : Rs. {data?.order[0]?.payment?.amount}</Text>
+                            <Text style={styles.boldRightSmSpan}>Juza Foods Private Limited</Text>
 
 
                         </Rect>
-
-
 
                         :
                         <Text style={styles.paragraph}>No Data Available</Text>
@@ -129,27 +175,6 @@ const PdfReport = ({ data }) => {
 
                 </View>
 
-                {/* <View style={styles.section}>
-                    <Text style={styles.heading}>Order Report</Text>
-
-                    <View style={styles.table}>
-                        <View style={styles.tableRow}>
-                            <Text style={styles.tableCell}>Column 1</Text>
-                            <Text style={styles.tableCell}>Column 2</Text>
-                            <Text style={styles.tableCell}>Column 3</Text>
-                            <Text style={styles.tableCell}>Column 4</Text>
-                            <Text style={styles.tableCell}>Column 5</Text>
-                        </View>
-                        <View style={styles.tableRow}>
-                            <Text style={styles.tableCell}>Data 1</Text>
-                            <Text style={styles.tableCell}>Data 2</Text>
-                            <Text style={styles.tableCell}>Data 3</Text>
-                            <Text style={styles.tableCell}>Data 4</Text>
-                            <Text style={styles.tableCell}>Data 5</Text>
-                        </View>
-                    </View>
-
-                </View> */}
             </Page>
         </Document>
     )

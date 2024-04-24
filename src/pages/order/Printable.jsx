@@ -38,7 +38,7 @@ const Printable = React.forwardRef((props, ref) => {
             {
                 props?.data?.orderProducts?.length > 0
                 &&
-                <table className='w-full border-t border-b border-black'>
+                <table className='w-full border-t border-black'>
                     <thead className=''>
                         <tr className='border-b border-black'>
                             <th className='py-2 px-4 text-left font-extrabold'>Product</th>
@@ -52,7 +52,7 @@ const Printable = React.forwardRef((props, ref) => {
                     <tbody>
                         {
                             props?.data?.orderProducts?.map((row, i) => (
-                                <tr key={i}>
+                                <tr key={i} className='border-b border-black'>
                                     <td className='py-2 px-4 text-left font-extrabold'>{row?.p_name}</td>
                                     <td className='py-2 px-4 text-left'>{row?.weight}</td>
                                     <td className='py-2 px-4 text-left'>₹{row?.finalPrice}</td>

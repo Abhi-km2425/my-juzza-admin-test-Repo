@@ -103,7 +103,7 @@ const CategoryList = () => {
     <div className="h-full w-full flex flex-col items-start mb-10">
       <div className="w-full flex justify-between items-center">
         <h1 className="text-primary font-bold md:text-2xl mb-6 mt-3">
-          <div>ProductList</div>
+          <div>Categories</div>
         </h1>
         <div>
           <button

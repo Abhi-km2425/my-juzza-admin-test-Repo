@@ -65,7 +65,7 @@ const DetailedView = () => {
   const contentToPrint = useRef(null);
 
   const handlePrint = useReactToPrint({
-    documentTitle: "Daily Report",
+    documentTitle: "Invoice",
     onBeforePrint: () => console.log("before printing..."),
     onAfterPrint: () => console.log("after printing..."),
     removeAfterPrint: true,
@@ -92,7 +92,7 @@ const DetailedView = () => {
               <Printable data={data} ref={contentToPrint} />
             </div>
 
-            <PDFDownloadLink document={<PdfReport data={data} />} fileName={`Daily-Report.pdf`}>
+            <PDFDownloadLink document={<PdfReport data={data} />} fileName={`Invoice.pdf`}>
               <button
                 className="w-[50%] sm:w-1/6 min-w-fit bg-primary text-base text-white flex items-center justify-around px-[1vw] py-[1vh] rounded-lg">
                 Download <IoDownloadOutline />

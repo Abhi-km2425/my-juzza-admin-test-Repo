@@ -95,7 +95,7 @@ const ProductList = () => {
     <div className="h-full w-full flex flex-col items-start mb-10">
       <div className="w-full flex justify-between items-center">
         <h1 className="text-primary font-bold md:text-2xl mb-6 mt-3">
-          <div>ProductList</div>
+          <div>Products</div>
         </h1>
         <Link to={"/admin/products/add-product"}>
           <button className="bg-primary text-white text-sm p-3 rounded hover:scale-105 ease-in-out duration-300 ">

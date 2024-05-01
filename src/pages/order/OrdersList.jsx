@@ -13,6 +13,8 @@ const OrdersList = () => {
   const axios = useAxiosPrivate();
   const navigate = useNavigate();
 
+  const [status, setStatus] = useState("")
+
   // Delete from the Table
   const DetailedViewHandler = async (data) => {
     setLoading(true);
@@ -22,7 +24,7 @@ const OrdersList = () => {
   const initialData = async () => {
     setLoading(true);
     await axios
-      .get(GetAllOrders)
+      .get(`${GetAllOrders}?status=${status}`)
       .then((res) => {
         setData(res?.data?.orderList);
       })
@@ -36,7 +38,7 @@ const OrdersList = () => {
 
   useEffect(() => {
     initialData();
-  }, []);
+  }, [status]);
 
   return (
     <div className="h-full w-full flex flex-col items-start mb-10">
@@ -44,6 +46,20 @@ const OrdersList = () => {
         <h1 className="text-primary font-bold md:text-2xl mb-6 mt-3">
           <div>Orders</div>
         </h1>
+
+        <select
+          onChange={(e)=> setStatus(e.target.value)}
+          name="status"
+          id=""
+          className="w-fit border focus:outline-none p-2 rounded py-3"
+        >
+          <option value="">Select Status</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="re-funded">Re-funded</option>
+        </select>
+
       </div>
 
       <div className="w-full">

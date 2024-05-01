@@ -21,7 +21,8 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
     quantity: data?.quantity,
     weight: data?.weight,
     description: data?.description,
-    image: null,
+    images: null,
+    cover: null,
   });
   const axios = useAxiosPrivate();
 
@@ -39,17 +40,27 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
     formDataToSend.append("quantity", productData.quantity);
     formDataToSend.append("weight", productData.weight);
     formDataToSend.append("description", productData.description);
+    formDataToSend.append("cover", productData.cover);
+
     // Append each image file individually
-    if (productData?.image !== null) {
-      productData.image.forEach((image) => {
-        formDataToSend.append("image", image);
+
+    if (productData?.images !== null) {
+      productData.images.forEach((image) => {
+        formDataToSend.append("images", image);
       });
     }
 
     try {
       setLoading(true);
-      console.log(productData);
-      const response = await axios.put(UpdateProducts, formDataToSend);
+      console.log('editing', productData);
+      console.log('eformDataToSend', [...formDataToSend.entries()]);
+      const response = await axios.put(UpdateProducts, formDataToSend,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
       toast.success(response?.data?.msg);
       setEditProductModal(false);
       cb();
@@ -71,7 +82,7 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
   const handleImageChange = (e) => {
     const files = e.target.files;
     const imageFiles = Array.from(files);
-    setProductData({ ...productData, image: imageFiles });
+    setProductData({ ...productData, images: imageFiles });
   };
 
   useEffect(() => {
@@ -88,6 +99,8 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
         setLoading(false);
       });
   }, []);
+
+  console.log(productData)
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50">
@@ -158,17 +171,31 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
 
             <div className="w-full mt-1 ">
               <div className="bg-white w-full rounded flex flex-col ">
+
                 <label htmlFor="" className="text-start font-bold text-lg pb-2">
-                  Product Images
+                  Cover Image
+                </label>
+                <input
+                  onChange={(e) => setProductData((prev) => ({ ...prev, cover: e.target.files[0] }))}
+                  // onChange={(e)=> console.log( e.target.files[0])}
+                  type="file"
+                  name="cover"
+                  accept="image/*"
+                  className="w-full border p-2 text-sm rounded focus:outline-none"
+                />
+
+                <label htmlFor="" className="text-start font-bold text-lg pb-2">
+                  Other Images
                 </label>
                 <input
                   onChange={handleImageChange}
                   type="file"
-                  name="image"
+                  name="images"
                   accept="image/*"
                   multiple
                   className="w-full border p-2 text-sm rounded focus:outline-none"
                 />
+
               </div>
             </div>
 

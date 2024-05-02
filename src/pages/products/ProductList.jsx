@@ -49,7 +49,7 @@ const ProductList = () => {
 
   // Delete from the Table
   const DeleteHandler = async (data) => {
-    const conform = window.confirm("Are You Sure You Want Do this?");
+    const conform = window.confirm("Do You Want to change the availability status?");
 
     if (conform) {
       setLoading(true);

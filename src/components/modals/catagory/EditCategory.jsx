@@ -6,6 +6,8 @@ import { useState } from "react";
 
 const EditCategory = ({ editModal, cb, setLoading, data }) => {
   const [category, setCategoryName] = useState(data?.categoryName);
+  const [image, setImage] = useState(null);
+
   const axios = useAxiosPrivate();
 
   const submitHandler = async (e) => {
@@ -13,11 +15,18 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
 
     setLoading(true);
     try {
-      const categoryName = {
-        id: data?._id,
-        categoryName: category,
-      };
-      const response = await axios.post(UpdateCategory, categoryName);
+      const formData = new FormData();
+      formData.append("categoryName", category)
+      formData.append("image", image)
+
+      const response = await axios.put(`${UpdateCategory}/${data?._id}`, formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
       toast.success(response?.data?.msg);
       cb();
       editModal(false);
@@ -41,8 +50,11 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
         />
 
         <div className="w-full">
-          <form action="" onSubmit={submitHandler}>
-            <div>
+          <div className="w-full flex items-end gap-4">
+            <div className="bg-white w-full rounded flex flex-col ">
+              <label htmlFor="" className="text-start font-bold text-lg pb-2">
+                Category Name
+              </label>
               <input
                 type="text"
                 name="categoryName"
@@ -53,15 +65,31 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
                 className="w-full border border-gray-400 rounded  p-2 text-sm focus:outline-none"
               />
             </div>
-            <div className="mt-5">
-              <button
-                type="submit"
-                className="bg-primary p-2 px-5 rounded text-white text-sm"
-              >
-                Submit
-              </button>
+
+            <div className="bg-white w-full rounded flex flex-col ">
+              <label htmlFor="" className="text-start font-bold text-lg pb-2">
+                Category Image
+              </label>
+              <input
+                onChange={(e) => setImage(e.target.files[0])}
+                type="file"
+                name="image"
+                accept="image/*"
+                className="w-full border p-2 text-sm rounded focus:outline-none"
+              />
             </div>
-          </form>
+
+          </div>
+
+          <div className="mt-5">
+            <button
+              type="submit"
+              onClick={submitHandler}
+              className="bg-primary p-2 px-5 rounded text-white text-sm"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </div>
     </div>

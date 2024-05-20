@@ -6,6 +6,8 @@ import { AddCategories } from "../../../utils/Endpoint";
 
 const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
   const [category, setCategoryName] = useState("");
+  const [image, setImage] = useState(null);
+
   const axios = useAxiosPrivate();
 
   const submitHandler = async (e) => {
@@ -13,8 +15,18 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
 
     setLoading(true);
     try {
-      const categoryName = { categoryName: category };
-      const response = await axios.post(AddCategories, categoryName);
+      const formData = new FormData();
+      formData.append("categoryName", category)
+      formData.append("image", image)
+
+      const response = await axios.post(AddCategories, formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
       console.log(response);
       toast.success(response?.data?.msg,);
       cb();
@@ -26,6 +38,8 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
       setLoading(false);
     }
   };
+
+  console.log(image)
 
   return (
     <div className="fixed top-0 left-0 w-full h-screen bg-black/50 flex items-center justify-center z-50 ">
@@ -39,26 +53,44 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
         />
 
         <div className="w-full">
-          <form action="" onSubmit={submitHandler}>
-            <div>
+          <div className="w-full flex items-end gap-4">
+            <div className="bg-white w-full rounded flex flex-col ">
+              <label htmlFor="" className="text-start font-bold text-lg pb-2">
+                Category Name
+              </label>
               <input
                 type="text"
                 name="categoryName"
                 placeholder="Enter The Category Name"
                 onChange={(e) => setCategoryName(e.target.value)}
                 required
-                className="w-full border border-gray-400 rounded  p-2 text-sm focus:outline-none"
+                className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
               />
             </div>
-            <div className="mt-5">
-              <button
-                type="submit"
-                className="bg-primary p-2 px-5 rounded text-white text-sm"
-              >
-                Submit
-              </button>
+
+            <div className="bg-white w-full rounded flex flex-col ">
+              <label htmlFor="" className="text-start font-bold text-lg pb-2">
+                Category Image
+              </label>
+              <input
+                onChange={(e) => setImage(e.target.files[0])}
+                type="file"
+                name="image"
+                accept="image/*"
+                className="w-full border p-2 text-sm rounded focus:outline-none"
+              />
             </div>
-          </form>
+
+          </div>
+          <div className="mt-5">
+            <button
+              type="submit"
+              onClick={submitHandler}
+              className="bg-primary p-2 px-5 rounded text-white text-sm"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -12,6 +12,8 @@ import OrdersList from "./pages/order/OrdersList";
 import DetailedView from "./pages/order/DetailedView";
 import UsersList from "./pages/users/UsersList";
 import AddNewProduct from "./pages/products/AddNewProduct";
+import CouponList from "./pages/coupons/CouponList";
+import AddNewCoupon from "./pages/coupons/AddNewCoupon";
 
 function App() {
 
@@ -34,6 +36,9 @@ function App() {
               <Route path="/admin/users" element={<UsersList />} />
               <Route path="/admin/order" element={<OrdersList />} />
               <Route path="/admin/order/view/:id/:userid" element={<DetailedView />} />
+              <Route path="/admin/coupons" element={<CouponList/>} />
+              <Route path="/admin/coupons/add-coupon" element={<AddNewCoupon />} />
+
             </Route>
           </Routes>
         </Layout>

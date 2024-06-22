@@ -43,7 +43,7 @@ const SideBar = ({ sidebarData }) => {
             </Link>
           ))}
           <li
-            className={`w-full  mt-5 ${
+            className={`w-fit self-end  mt-5 ${
               slide
                 ? "flex items-center justify-center"
                 : "flex justify-end items-end"

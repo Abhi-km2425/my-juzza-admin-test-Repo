@@ -15,7 +15,12 @@ const Pagination = ({ Data, page, setPage, getMethod }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await getMethod();
+      try {
+        await getMethod();
+        
+      } catch (error) {
+        console.log(error)
+      }
     };
 
     fetchData();

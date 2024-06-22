@@ -11,7 +11,7 @@ import {
 } from "../../utils/Endpoint";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import AddProductModal from "../../components/modals/AddProductModal";
+import EditProductModal from "../../components/modals/EditProductModal";
 
 const ProductList = () => {
   const [data, setData] = useState([]);
@@ -112,14 +112,16 @@ const ProductList = () => {
           clickEdit={EditHandler}
           page={page}
         />
-        <div className="flex items-end justify-end mt-5">
+
+        {/* <div className="flex items-end justify-end mt-5">
           <Pagination />
-        </div>
+        </div> */}
+
       </div>
       {loading && <ReqLoader />}
       {editModal && (
-        <AddProductModal
-          setEditProductModal={setEditModal}
+        <EditProductModal
+          setEditModal={setEditModal}
           cb={initialData}
           data={productData}
         />

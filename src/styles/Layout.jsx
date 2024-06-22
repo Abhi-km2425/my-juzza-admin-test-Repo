@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FiUsers } from "react-icons/fi";
 import { CiShoppingCart } from "react-icons/ci";
+import { RiCoupon3Line } from "react-icons/ri";
 
 const sideBar = [
   {
@@ -23,6 +24,12 @@ const sideBar = [
     name: "Products",
     path: "/admin/products",
     icon: <MdOutlineProductionQuantityLimits size={23} />,
+  },
+  {
+    id: 2,
+    name: "Coupons",
+    path: "/admin/coupons",
+    icon: <RiCoupon3Line size={23} />,
   },
   {
     id: 13,

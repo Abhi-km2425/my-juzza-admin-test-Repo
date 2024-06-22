@@ -7,7 +7,7 @@ import { GetCategory, UpdateProducts } from "../../utils/Endpoint";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import ReqLoader from "../loader/ReqLoader";
 
-const AddProductModal = ({ setEditProductModal, cb, data }) => {
+const EditProductModal = ({ setEditModal, cb, data }) => {
   const [loading, setLoading] = useState(false);
   const [categoryData, setCategoryData] = useState();
   const [productData, setProductData] = useState({
@@ -62,7 +62,7 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
         }
       );
       toast.success(response?.data?.msg);
-      setEditProductModal(false);
+      setEditModal(false);
       cb();
     } catch (error) {
       toast.error(error?.response?.data?.msg);
@@ -109,7 +109,7 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
           Edit Product
         </h1>
         <IoClose
-          onClick={() => setEditProductModal(false)}
+          onClick={() => setEditModal(false)}
           className="absolute right-3 top-3 rounded bg-primary_colors text-white cursor-pointer bg-primary"
         />
 
@@ -215,4 +215,4 @@ const AddProductModal = ({ setEditProductModal, cb, data }) => {
   );
 };
 
-export default AddProductModal;
+export default EditProductModal;

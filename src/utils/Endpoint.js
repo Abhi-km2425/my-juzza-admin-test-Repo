@@ -32,3 +32,10 @@ export const BlockUser= "/api/admin/block-user";//=>id
 export const UnblockUser= "/api/admin/unblock-user";//=>id
 
 export const GetDashboard = "/api/admin/dashboard";
+
+// coupons 
+export const AddCouponRoute = '/api/admin/coupon'
+export const GetCouponRoute = '/api/admin/coupon'
+export const GetAllCouponRoute = '/api/admin/coupon'
+export const UpdateCouponRoute = '/api/admin/coupon'
+export const CouponStatusRoute = '/api/admin/coupon/status'

@@ -14,6 +14,7 @@ import PdfReport from "./PdfReport";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print"
 import Printable from './Printable';
+import { orderStatus } from "../../datas/dropDatas";
 
 const DetailedView = () => {
   const [loading, setLoading] = useState(false);
@@ -78,7 +79,7 @@ const DetailedView = () => {
           <span><span className="text-primary">Order</span>#{id}</span>
 
           <div className="flex items-center">
-          <button
+            <button
               onClick={() => {
                 handlePrint(null, () => contentToPrint.current);
               }}
@@ -87,8 +88,8 @@ const DetailedView = () => {
               Print
             </button>
 
-             {/* Hidden Component to Print */}
-             <div className="hidden">
+            {/* Hidden Component to Print */}
+            <div className="hidden">
               <Printable data={data} ref={contentToPrint} />
             </div>
 
@@ -136,10 +137,11 @@ const DetailedView = () => {
               className=" border focus:outline-none p-2 w-full rounded py-3"
             >
               <option value="">Select Status</option>
-              <option value="processing">Processing</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="re-funded">Re-funded</option>
+              {
+                orderStatus?.map((item, i) => (
+                  <option key={i} value={item?.value}>{item?.label}</option>
+                ))
+              }
             </select>
           </div>
           <div className="border rounded p-5 bg-white shadow-lg ">

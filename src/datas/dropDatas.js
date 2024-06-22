@@ -83,3 +83,13 @@ export const couponJson = [
   },
  
 ]
+
+
+export const orderStatus = [
+  {id:1, value:'processing', label:'Processing'},
+  {id:2, value:'billed', label:'Billed'},
+  {id:3, value:'packed', label:'Packed'},
+  {id:4, value:'shipped', label:'Shipped'},
+  {id:5, value:'delivered', label:'Delivered'},
+  {id:6, value:'re-funded', label:'Re-funded'},
+]

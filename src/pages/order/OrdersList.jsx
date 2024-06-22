@@ -5,6 +5,7 @@ import OrderTable from "../../components/tables/OrderTable";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Pagination from "../../components/Pagination";
 import ReqLoader from "../../components/loader/ReqLoader";
+import { orderStatus } from "../../datas/dropDatas";
 
 const OrdersList = () => {
   const [data, setData] = useState([]);
@@ -54,10 +55,12 @@ const OrdersList = () => {
           className="w-fit border focus:outline-none p-2 rounded py-3"
         >
           <option value="">Select Status</option>
-          <option value="processing">Processing</option>
-          <option value="shipped">Shipped</option>
-          <option value="delivered">Delivered</option>
-          <option value="re-funded">Re-funded</option>
+          {
+            orderStatus?.map((item,i)=>(
+              <option key={i} value={item?.value}>{item?.label}</option>
+            ))
+          }
+          
         </select>
 
       </div>

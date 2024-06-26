@@ -18,7 +18,7 @@ const DetailedViewTable = ({ products }) => {
           {/* table heading end */}
           {products?.orderProducts?.map((item) => (
             <tr key={item._id} className="bg-white border-b hover:bg-gray-50">
-              <td className="pl-10  py-4  w-[380px]">
+              <td className="pl-5  py-4  w-[380px]">
                 <div className="flex space-x-6 items-center">
                   {item?.images?.length > 0 && (
                     <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
@@ -63,12 +63,11 @@ const DetailedViewTable = ({ products }) => {
               </td>
             </tr>
           ))}
-          <tr>
-            <td colSpan="4" className="text-right pr-2 py-4">
-              Total:
+          <tr className="text-black text-lg">
+            <td colSpan="4" className="text-right py-4">
+              Grand Total:
             </td>
-            <td className="text-right py-4">Rs . {products?.subTotal}</td>
-            <td></td>
+            <td className="text-right py-4">₹{products?.order[0]?.payment?.amount}</td>
           </tr>
         </tbody>
       </table>

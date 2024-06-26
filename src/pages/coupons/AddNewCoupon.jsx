@@ -36,13 +36,6 @@ const AddNewCoupon = () => {
       return;
     }
 
-    // const formDataToSend = new FormData();
-    // formDataToSend.append("couponName", CouponData.couponName);
-    // formDataToSend.append("couponValue", CouponData.couponValue);
-    // formDataToSend.append("expiryDate", CouponData.expiryDate);
-    // formDataToSend.append("maxValue", CouponData.maxValue);
-    // formDataToSend.append("minValue", CouponData.minValue);
-   
 
     try {
       console.log("adding", CouponData);

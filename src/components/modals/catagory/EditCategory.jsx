@@ -5,18 +5,39 @@ import { UpdateCategory } from "../../../utils/Endpoint";
 import { useState } from "react";
 
 const EditCategory = ({ editModal, cb, setLoading, data }) => {
-  const [category, setCategoryName] = useState(data?.categoryName);
   const [image, setImage] = useState(null);
+
+  const [postData, setPostData] = useState({
+    categoryName: data?.categoryName ,
+    
+  })
+
+
+  const changeHandler = (e)=>{
+    setPostData((prev)=>({
+      ...prev,
+      [e.target.name] : e.target.value
+    }))
+  }
 
   const axios = useAxiosPrivate();
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    const isEmpty = Object.values(postData).some(
+      (value) => typeof value === "string" && value.trim() === ""
+    );
+
+    if (isEmpty) {
+      toast.warning("Please fill out all fields before submitting.");
+      return;
+    }
+
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("categoryName", category)
+      formData.append("categoryName", postData?.categoryName)
       formData.append("image", image)
 
       const response = await axios.put(`${UpdateCategory}/${data?._id}`, formData,
@@ -49,7 +70,7 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
           className="absolute right-3 top-3 rounded bg-primary_colors text-white cursor-pointer bg-primary"
         />
 
-        <div className="w-full">
+        <div className="w-full flex flex-col gap-4">
           <div className="w-full flex items-end gap-4">
             <div className="bg-white w-full rounded flex flex-col ">
               <label htmlFor="" className="text-start font-bold text-lg pb-2">
@@ -59,8 +80,8 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
                 type="text"
                 name="categoryName"
                 placeholder="Enter The Category Name"
-                onChange={(e) => setCategoryName(e.target.value)}
-                value={category}
+                onChange={changeHandler}
+                value={postData?.categoryName}
                 required
                 className="w-full border border-gray-400 rounded  p-2 text-sm focus:outline-none"
               />

@@ -23,6 +23,7 @@ const EditProductModal = ({ setEditModal, cb, data }) => {
     description: data?.description,
     images: null,
     cover: null,
+    stdShipCharge: data?.stdShipCharge,
   });
   const axios = useAxiosPrivate();
 
@@ -41,6 +42,7 @@ const EditProductModal = ({ setEditModal, cb, data }) => {
     formDataToSend.append("weight", productData.weight);
     formDataToSend.append("description", productData.description);
     formDataToSend.append("cover", productData.cover);
+    formDataToSend.append("stdShipCharge", productData.stdShipCharge);
 
     // Append each image file individually
 

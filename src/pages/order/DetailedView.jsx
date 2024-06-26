@@ -75,7 +75,7 @@ const DetailedView = () => {
   return (
     <div className="h-full w-full flex flex-col items-start mb-10">
       <div className="w-full flex flex-col justify-between items-start">
-        <div className="w-full text font-bold md:text-2xl mt-3 flex justify-between">
+        <div className="w-full text font-bold md:text-2xl mt-3 flex flex-wrap justify-between">
           <span><span className="text-primary">Order</span>#{id}</span>
 
           <div className="flex items-center">
@@ -103,17 +103,29 @@ const DetailedView = () => {
 
         </div>
         {data?.order && data.order[0] && (
-          <h1 className="font-medium text-gray-500 capitalize flex items-center gap-2 mt-2">
+          <div className="font-medium text-gray-500 capitalize flex flex-wrap items-center gap-2 mt-2">
             <FaCalendarAlt />
             {formatDate(data.order[0].createdAt)}
             {/* monday 04-march-2024 */}
+
             <span className="bg-yellow-300 text-sm text-white px-5 rounded p-1">
               {data?.order[0]?.payment?.method}
             </span>
+
             <span className="bg-sky-300 text-sm text-white px-5 rounded p-1">
               {data?.orderStatus[0]}
             </span>
-          </h1>
+
+            <span className="bg-green-300 text-sm text-white px-5 rounded p-1">
+              {data?.order[0]?.deliveryType ?? 'Delivery-Type'} : 
+              {data?.order[0]?.deliveryCharge ? `₹${data?.order[0]?.deliveryCharge}` : 'Delivery-Charge'}
+            </span>
+
+            <span className="bg-red-400 text-sm text-white px-5 rounded p-1">
+              Discount : ₹{data?.order[0]?.discount ?? 0}
+            </span>
+
+          </div>
         )}
 
 

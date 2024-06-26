@@ -5,18 +5,41 @@ import { toast } from "react-toastify";
 import { AddCategories } from "../../../utils/Endpoint";
 
 const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
-  const [category, setCategoryName] = useState("");
   const [image, setImage] = useState(null);
+
+  const [postData, setPostData] = useState({
+    categoryName:'',
+    stdShipCharge:'',
+    xprsShipCharge:'',
+  })
+
+  const changeHandler = (e)=>{
+    setPostData((prev)=>({
+      ...prev,
+      [e.target.name] : e.target.value
+    }))
+  }
 
   const axios = useAxiosPrivate();
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    const isEmpty = Object.values(postData).some(
+      (value) => typeof value === "string" && value.trim() === ""
+    );
+
+    if (isEmpty) {
+      toast.warning("Please fill out all fields before submitting.");
+      return;
+    }
+
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("categoryName", category)
+      formData.append("categoryName", postData?.categoryName)
+      formData.append("stdShipCharge", postData?.stdShipCharge)
+      formData.append("xprsShipCharge", postData?.xprsShipCharge)
       formData.append("image", image)
 
       const response = await axios.post(AddCategories, formData,
@@ -52,7 +75,7 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
           className="absolute right-3 top-3 rounded bg-primary_colors text-white cursor-pointer bg-primary"
         />
 
-        <div className="w-full">
+        <div className="w-full flex flex-col gap-4">
           <div className="w-full flex items-end gap-4">
             <div className="bg-white w-full rounded flex flex-col ">
               <label htmlFor="" className="text-start font-bold text-lg pb-2">
@@ -62,7 +85,7 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
                 type="text"
                 name="categoryName"
                 placeholder="Enter The Category Name"
-                onChange={(e) => setCategoryName(e.target.value)}
+                onChange={changeHandler}
                 required
                 className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
               />
@@ -81,7 +104,42 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
               />
             </div>
 
+
+
           </div>
+
+          <div className="w-full flex items-end gap-4">
+            <div className="bg-white w-full rounded flex flex-col ">
+              <label htmlFor="" className="text-start font-bold text-lg pb-2">
+                Standard Delivery Charge
+              </label>
+              <input
+                type="number"
+                name="stdShipCharge"
+                placeholder="Standard Shipping Charge"
+                onChange={changeHandler}
+                required
+                className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
+              />
+            </div>
+
+            <div className="bg-white w-full rounded flex flex-col ">
+              <label htmlFor="" className="text-start font-bold text-lg pb-2">
+                Express Delivery Charge
+              </label>
+              <input
+                type="number"
+                name="xprsShipCharge"
+                placeholder="Express Shipping Charge"
+                onChange={changeHandler}
+                required
+                className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
+              />
+            </div>
+
+          </div>
+
+
           <div className="mt-5">
             <button
               type="submit"

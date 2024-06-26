@@ -1,4 +1,5 @@
 import { IoCreateOutline, IoTrashBinOutline } from "react-icons/io5";
+import { MdChecklistRtl, MdFilterListOff } from "react-icons/md";
 
 const CategoryTable = ({ data, clickEdit, clickDelete, page }) => {
   return (
@@ -8,7 +9,8 @@ const CategoryTable = ({ data, clickEdit, clickDelete, page }) => {
           <tr className="bg-primary text-white">
             <th className="py-2 px-4 border-b border-r">No.</th>
             <th className="py-2 px-4 border-b border-r">Name</th>
-            <th className="py-2 px-4 border-b border-r">Offer Price</th>
+            <th className="py-2 px-4 border-b border-r">Standard Shipping</th>
+            <th className="py-2 px-4 border-b border-r">Express Shipping</th>
             <th className="py-2 px-4 border-b border-r">Availability</th>
             <th className="py-2 px-4 border-b border-r">Action</th>
           </tr>
@@ -23,7 +25,10 @@ const CategoryTable = ({ data, clickEdit, clickDelete, page }) => {
               <td className="py-2 px-4 border-b border-r capitalize">
                 {row?.categoryName}
               </td>
-              <td className="py-2 px-4 border-b border-r">{row?.offerValue}</td>
+
+              <td className="py-2 px-4 border-b border-r">{row?.stdShipCharge ? `₹${row?.stdShipCharge}`  : 'NIL'}</td>
+              <td className="py-2 px-4 border-b border-r">{row?.xprsShipCharge ? `₹${row?.xprsShipCharge}` : 'NIL'}</td>
+              
               <td className="py-2 px-4 border-b border-r">
                 {row?.isAvailable ? (
                   <span className="text-green-500">True</span>
@@ -31,6 +36,7 @@ const CategoryTable = ({ data, clickEdit, clickDelete, page }) => {
                   <span className="text-red-500">False</span>
                 )}
               </td>
+              
               <td className="py-2 px-4 border-b border-r">
                 {
                   <div className="flex justify-center gap-5 cursor-pointer">
@@ -38,10 +44,23 @@ const CategoryTable = ({ data, clickEdit, clickDelete, page }) => {
                       className="text-blue-500"
                       onClick={() => clickEdit(row)}
                     />
-                    <IoTrashBinOutline
-                      className="text-red-500"
-                      onClick={() => clickDelete(row)}
-                    />
+
+
+                    <div>
+                      {row?.isAvailable ? (
+                        <MdChecklistRtl
+                          className="text-green-500"
+                          onClick={() => clickDelete(row)}
+                        />
+                      ) : (
+                        <MdFilterListOff
+                          className="text-red-500"
+                          onClick={() => clickDelete(row)}
+                        />
+                      )}
+                    </div>
+
+
                   </div>
                 }
               </td>

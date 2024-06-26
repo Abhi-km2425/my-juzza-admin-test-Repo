@@ -9,8 +9,7 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
 
   const [postData, setPostData] = useState({
     categoryName:'',
-    stdShipCharge:'',
-    xprsShipCharge:'',
+   
   })
 
   const changeHandler = (e)=>{
@@ -38,8 +37,6 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
     try {
       const formData = new FormData();
       formData.append("categoryName", postData?.categoryName)
-      formData.append("stdShipCharge", postData?.stdShipCharge)
-      formData.append("xprsShipCharge", postData?.xprsShipCharge)
       formData.append("image", image)
 
       const response = await axios.post(AddCategories, formData,
@@ -104,41 +101,7 @@ const AddCategory = ({ setAddProductModal, cb, setLoading }) => {
               />
             </div>
 
-
-
           </div>
-
-          <div className="w-full flex items-end gap-4">
-            <div className="bg-white w-full rounded flex flex-col ">
-              <label htmlFor="" className="text-start font-bold text-lg pb-2">
-                Standard Delivery Charge
-              </label>
-              <input
-                type="number"
-                name="stdShipCharge"
-                placeholder="Standard Shipping Charge"
-                onChange={changeHandler}
-                required
-                className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
-              />
-            </div>
-
-            <div className="bg-white w-full rounded flex flex-col ">
-              <label htmlFor="" className="text-start font-bold text-lg pb-2">
-                Express Delivery Charge
-              </label>
-              <input
-                type="number"
-                name="xprsShipCharge"
-                placeholder="Express Shipping Charge"
-                onChange={changeHandler}
-                required
-                className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
-              />
-            </div>
-
-          </div>
-
 
           <div className="mt-5">
             <button

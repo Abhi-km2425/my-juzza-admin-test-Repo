@@ -8,9 +8,8 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
   const [image, setImage] = useState(null);
 
   const [postData, setPostData] = useState({
-    categoryName: data?.categoryName || "" ,
-    stdShipCharge: data?.stdShipCharge || "" ,
-    xprsShipCharge: data?.xprsShipCharge || "" ,
+    categoryName: data?.categoryName ,
+    
   })
 
 
@@ -39,8 +38,6 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
     try {
       const formData = new FormData();
       formData.append("categoryName", postData?.categoryName)
-      formData.append("stdShipCharge", postData?.stdShipCharge)
-      formData.append("xprsShipCharge", postData?.xprsShipCharge)
       formData.append("image", image)
 
       const response = await axios.put(`${UpdateCategory}/${data?._id}`, formData,
@@ -100,39 +97,6 @@ const EditCategory = ({ editModal, cb, setLoading, data }) => {
                 name="image"
                 accept="image/*"
                 className="w-full border p-2 text-sm rounded focus:outline-none"
-              />
-            </div>
-
-          </div>
-
-          <div className="w-full flex items-end gap-4">
-            <div className="bg-white w-full rounded flex flex-col ">
-              <label htmlFor="" className="text-start font-bold text-lg pb-2">
-                Standard Delivery Charge
-              </label>
-              <input
-                type="number"
-                name="stdShipCharge"
-                placeholder="Standard Shipping Charge"
-                onChange={changeHandler}
-                value={postData?.stdShipCharge}
-                required
-                className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
-              />
-            </div>
-
-            <div className="bg-white w-full rounded flex flex-col ">
-              <label htmlFor="" className="text-start font-bold text-lg pb-2">
-                Express Delivery Charge
-              </label>
-              <input
-                type="number"
-                name="xprsShipCharge"
-                placeholder="Express Shipping Charge"
-                onChange={changeHandler}
-                value={postData?.xprsShipCharge}
-                required
-                className="w-full h-fit border border-gray-400 rounded  p-2 text-sm focus:outline-none"
               />
             </div>
 

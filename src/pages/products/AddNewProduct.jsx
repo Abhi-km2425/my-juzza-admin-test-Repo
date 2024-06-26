@@ -20,6 +20,7 @@ const AddNewProduct = () => {
     description: "",
     images: null,
     cover: null,
+    stdShipCharge:"",
   });
   const axios = useAxiosPrivate();
 
@@ -73,6 +74,7 @@ const AddNewProduct = () => {
     formDataToSend.append("weight", productData.weight);
     formDataToSend.append("description", productData.description);
     formDataToSend.append("cover", productData.cover);
+    formDataToSend.append("stdShipCharge", productData.stdShipCharge);
 
     // Append each image file individually
     if (productData?.images !== null) {
@@ -103,7 +105,8 @@ const AddNewProduct = () => {
         weight: "",
         description: "",
         images: null,
-        cover:null
+        cover:null,
+        stdShipCharge:"",
       });
       console.log(response);
     } catch (error) {

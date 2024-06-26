@@ -41,6 +41,13 @@ export const productJson = [
     type: "number",
     placeHolder:"Eg: Sale Price"
   },
+  {
+    id: 7,
+    name: "stdShipCharge",
+    label: "Standard Shipping Charge",
+    type: "number",
+    placeHolder:"Standard Shipping Charge per Item"
+  },
 ]
 
 

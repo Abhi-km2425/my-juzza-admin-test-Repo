@@ -65,10 +65,7 @@ const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandl
                       )}
                     </div>
 
-                    <IoTrashBinOutline
-                      className="text-red-500"
-                      onClick={() => PermanentDeleteHandler(row)}
-                    />
+                  
                   </div>
                 }
               </td>

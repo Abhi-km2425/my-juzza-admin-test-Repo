@@ -1,0 +1,7 @@
+[
+    {"_id":0,"panchayath":"somepanch","regNum":"123","name":"tbod1"},
+    {"_id":1,"panchayath":"somepanch","regNum":"223","name":"tbod2"},
+    {"_id":2,"panchayath":"somepanch","regNum":"323","name":"tbod3"},
+    {"_id":3,"panchayath":"somepanch","regNum":"423","name":"tbod4"},
+    {"_id":4,"panchayath":"somepanch","regNum":"523","name":"tbod5"}
+]

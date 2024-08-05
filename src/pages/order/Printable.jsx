@@ -27,7 +27,10 @@ const Printable = React.forwardRef((props, ref) => {
                     <span className='font-extrabold'>{props?.data?.address?.name}</span>
                     <span >{props?.data?.address?.houseName},
                         {props?.data?.address?.street}, {props?.data?.address?.city}, {props?.data?.address?.state},
-                        {props?.data?.address?.postalCode}, 
+                        <br/>
+                        Pin: {props?.data?.address?.postalCode}, 
+                        <br/>
+                        Post Office: {props?.data?.address?.postOffice ?? 'NIL'}
                     </span>
                     <span >Phone : {props?.data?.address?.phone}</span>
                 </div>

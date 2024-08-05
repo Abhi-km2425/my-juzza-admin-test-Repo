@@ -132,8 +132,9 @@ const PdfReport = ({ data }) => {
                                     <Text style={styles.boldSpan}>{data?.address?.name}</Text>
                                     <Text style={styles.paragraph}>{data?.address?.houseName},
                                         {data?.address?.street}</Text>
-                                    <Text style={styles.paragraph}>{data?.address?.city}, {data?.address?.state},
-                                        {data?.address?.postalCode}</Text>
+                                    <Text style={styles.paragraph}>{data?.address?.city}, {data?.address?.state}</Text>
+                                    <Text style={styles.paragraph}>Pin : {data?.address?.postalCode}</Text>
+                                    <Text style={styles.paragraph}>Post Office : {data?.address?.postOffice ?? 'NIL'}</Text>
                                     <Text style={styles.paragraph}>Phone : {data?.address?.phone}</Text>
                                 </Rect>
                             </Rect>

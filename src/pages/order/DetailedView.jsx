@@ -178,7 +178,9 @@ const DetailedView = () => {
               <p>
                 {data?.address?.houseName}, {data?.address?.street}, <br />{" "}
                 {data?.address?.city}, {data?.address?.phone} <br />
-                pin : {data?.address?.postalCode}
+                Pin : {data?.address?.postalCode}
+                <br/>
+                Post Office : {data?.address?.postOffice ?? 'NIL'}
               </p>
             </div>
           </div>

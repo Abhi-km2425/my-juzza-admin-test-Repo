@@ -64,10 +64,22 @@ const DetailedViewTable = ({ products }) => {
             </tr>
           ))}
           <tr className="text-black text-lg">
-            <td colSpan="4" className="text-right py-4">
+            <td colSpan="4" className="text-right py-1">
+              Total:
+            </td>
+            <td className="text-right py-1">₹{Number(products?.order[0]?.payment?.amount) + Number(products?.order[0]?.discount)}</td>
+          </tr>
+          <tr className="text-black text-lg">
+            <td colSpan="4" className="text-right py-1">
+              Discount:
+            </td>
+            <td className="text-right py-1">₹{products?.order[0]?.discount}</td>
+          </tr>
+          <tr className="text-black text-lg">
+            <td colSpan="4" className="text-right py-1">
               Grand Total:
             </td>
-            <td className="text-right py-4">₹{products?.order[0]?.payment?.amount}</td>
+            <td className="text-right py-1">₹{products?.order[0]?.payment?.amount}</td>
           </tr>
         </tbody>
       </table>

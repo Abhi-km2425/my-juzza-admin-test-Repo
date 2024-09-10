@@ -85,6 +85,12 @@ const Printable = React.forwardRef((props, ref) => {
         </table>
       )}
 
+      <span className="font-extrabold text-xl text-right mr-10">
+        Total : ₹ {Number(props?.data?.order[0]?.payment?.amount) + Number(props?.data?.order[0]?.discount)}
+      </span>
+      <span className="font-extrabold text-xl text-right mr-10">
+        Discount: ₹ {props?.data?.order[0]?.discount}
+      </span>
       <span className="font-extrabold text-2xl text-right mr-10">
         Grand Total : ₹ {props?.data?.order[0]?.payment?.amount}
       </span>

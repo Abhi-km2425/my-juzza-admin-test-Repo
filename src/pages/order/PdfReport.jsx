@@ -163,6 +163,8 @@ const PdfReport = ({ data }) => {
 
                             </View>
 
+                            <Text style={styles.boldRightSmSpan}>Total : Rs. {Number(data?.order[0]?.payment?.amount) + Number(data?.order[0]?.discount)}</Text>
+                            <Text style={styles.boldRightSmSpan}>Discount : Rs.{data?.order[0]?.discount} </Text>
                             <Text style={styles.boldRightLgSpan}>Grand Total : Rs. {data?.order[0]?.payment?.amount}</Text>
                             <Text style={styles.boldRightSmSpan}>Juza Foods Private Limited</Text>
 

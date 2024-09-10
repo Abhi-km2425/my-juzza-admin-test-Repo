@@ -117,13 +117,22 @@ const DetailedView = () => {
             </span>
 
             <span className="bg-green-300 text-sm text-white px-5 rounded p-1">
-              {data?.order[0]?.deliveryType ?? 'Delivery-Type'} : 
+              {data?.order[0]?.deliveryType ?? 'Delivery-Type'} :
               {data?.order[0]?.deliveryCharge ? `₹${data?.order[0]?.deliveryCharge}` : 'Delivery-Charge'}
             </span>
+
+            {
+              data?.order[0]?.couponId?.couponName
+              &&
+              <span className="bg-orange-400 text-sm text-white px-5 rounded p-1">
+                Coupon : {data?.order[0]?.couponId?.couponName}
+              </span>
+            }
 
             <span className="bg-red-400 text-sm text-white px-5 rounded p-1">
               Discount : ₹{data?.order[0]?.discount ?? 0}
             </span>
+
 
           </div>
         )}
@@ -179,7 +188,7 @@ const DetailedView = () => {
                 {data?.address?.houseName}, {data?.address?.street}, <br />{" "}
                 {data?.address?.city}, {data?.address?.phone} <br />
                 Pin : {data?.address?.postalCode}
-                <br/>
+                <br />
                 Post Office : {data?.address?.postOffice ?? 'NIL'}
               </p>
             </div>

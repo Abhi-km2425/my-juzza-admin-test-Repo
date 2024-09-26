@@ -1,5 +1,5 @@
-// export const baseUrl = "http://localhost:9000"
- export const baseUrl = "https://server.juzafoods.com"
+export const baseUrl = "http://localhost:9000"
+//  export const baseUrl = "https://server.juzafoods.com"
 //  export const baseUrl = "https://server1.juzafoods.com"
 
 // auth

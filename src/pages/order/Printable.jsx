@@ -3,6 +3,10 @@ import { formatDate } from "../../utils/DateFormat";
 
 const Printable = React.forwardRef((props, ref) => {
 
+  const subtotal = props?.data?.orderProducts.reduce((acc, item) => {
+    return acc += item.finalPrice * item.cartProduct?.quantity
+  }, 0) || 0;
+
   return (
     <div ref={ref} className="p-[20px] flex flex-col gap-5">
       <h1 className="text-4xl text-center font-extrabold">Invoice</h1>
@@ -31,6 +35,10 @@ const Printable = React.forwardRef((props, ref) => {
               ?.split("-")
               .reverse()
               .join("-")}
+          </p>
+          <p>
+            <span className="font-extrabold">Delivery :</span>{" "}
+            {props?.data?.order[0]?.deliveryType}
           </p>
           <p>
             <span className="font-extrabold">Total Items :</span>{" "}
@@ -86,13 +94,16 @@ const Printable = React.forwardRef((props, ref) => {
       )}
 
       <span className="font-extrabold text-xl text-right mr-10">
-        Total : ₹ {Number(props?.data?.order[0]?.payment?.amount) + Number(props?.data?.order[0]?.discount)}
+        SUBTOTAL : ₹ {subtotal}
       </span>
       <span className="font-extrabold text-xl text-right mr-10">
-        Discount: ₹ {props?.data?.order[0]?.discount}
+        SHIPPING: ₹ {props?.data?.order[0]?.deliveryCharge}
+      </span>
+      <span className="font-extrabold text-xl text-right mr-10">
+        DISCOUNT: ₹ {props?.data?.order[0]?.discount}
       </span>
       <span className="font-extrabold text-2xl text-right mr-10">
-        Grand Total : ₹ {props?.data?.order[0]?.payment?.amount}
+        GRAND TOTAL : ₹ {props?.data?.order[0]?.payment?.amount}
       </span>
       <span className="font-extrabold text-lg text-right mr-10">
         Juza Foods Private Limited

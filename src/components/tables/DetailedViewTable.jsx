@@ -1,6 +1,11 @@
 import { IoClose } from "react-icons/io5";
 
 const DetailedViewTable = ({ products }) => {
+
+  const subtotal = products?.orderProducts.reduce((acc, item) => {
+    return acc += item.finalPrice * item.cartProduct?.quantity
+  }, 0) || 0;
+
   return (
     <div className="relative w-full overflow-x-auto border border-[#EDEDED]">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -65,9 +70,15 @@ const DetailedViewTable = ({ products }) => {
           ))}
           <tr className="text-black text-lg">
             <td colSpan="4" className="text-right py-1">
-              Total:
+              Subtotal:
             </td>
-            <td className="text-right py-1">₹{Number(products?.order[0]?.payment?.amount) + Number(products?.order[0]?.discount)}</td>
+            <td className="text-right py-1">₹{subtotal}</td>
+          </tr>
+          <tr className="text-black text-lg">
+            <td colSpan="4" className="text-right py-1">
+              Shipping:
+            </td>
+            <td className="text-right py-1">₹{products?.order[0]?.deliveryCharge}</td>
           </tr>
           <tr className="text-black text-lg">
             <td colSpan="4" className="text-right py-1">

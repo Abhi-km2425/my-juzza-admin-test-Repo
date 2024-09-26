@@ -106,8 +106,13 @@ const styles = StyleSheet.create({
 
 
 const PdfReport = ({ data }) => {
-
     console.log(data)
+
+    const subtotal = data?.orderProducts.reduce((acc, item) => {
+        return acc += item.finalPrice * item.cartProduct?.quantity
+      }, 0) || 0;
+
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -122,9 +127,10 @@ const PdfReport = ({ data }) => {
                             <Rect style={styles.toprect}>
                                 <Rect style={styles.topleftrect}>
                                     <Text style={styles.paragraph}>Order Id : {data?.order[0]._id}</Text>
-                                    <Text style={styles.paragraph}>Order Date :{data?.order[0].createdAt?.split('T')[0]?.split('-').reverse().join('-')}</Text>
-                                    <Text style={styles.paragraph}>Invoice Date :{new Date().toISOString().split('T')[0]?.split('-').reverse().join('-')}</Text>
-                                    <Text style={styles.paragraph}>Total Items :{data?.orderProducts?.length}</Text>
+                                    <Text style={styles.paragraph}>Order Date : {data?.order[0].createdAt?.split('T')[0]?.split('-').reverse().join('-')}</Text>
+                                    <Text style={styles.paragraph}>Invoice Date : {new Date().toISOString().split('T')[0]?.split('-').reverse().join('-')}</Text>
+                                    <Text style={styles.paragraph}>Delivery : {data?.order[0]?.deliveryType}</Text>
+                                    <Text style={styles.paragraph}>Total Items : {data?.orderProducts?.length}</Text>
                                 </Rect>
 
                                 <Rect style={styles.toprightrect}>
@@ -163,7 +169,8 @@ const PdfReport = ({ data }) => {
 
                             </View>
 
-                            <Text style={styles.boldRightSmSpan}>Total : Rs. {Number(data?.order[0]?.payment?.amount) + Number(data?.order[0]?.discount)}</Text>
+                            <Text style={styles.boldRightSmSpan}>Subtotal : Rs. {subtotal}</Text>
+                            <Text style={styles.boldRightSmSpan}>Shipping : Rs.{data?.order[0]?.deliveryCharge} </Text>
                             <Text style={styles.boldRightSmSpan}>Discount : Rs.{data?.order[0]?.discount} </Text>
                             <Text style={styles.boldRightLgSpan}>Grand Total : Rs. {data?.order[0]?.payment?.amount}</Text>
                             <Text style={styles.boldRightSmSpan}>Juza Foods Private Limited</Text>

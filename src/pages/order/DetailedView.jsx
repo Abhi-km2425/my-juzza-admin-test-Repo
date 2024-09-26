@@ -105,7 +105,13 @@ const DetailedView = () => {
         </div>
 
         <div className="flex flex-col items-start ">
+          {
+            data?.order[0]?.payment?.method === "InternetBanking"
+            &&
+            data?.order[0]?.transactionId
+            &&
         <span className="text-base" ><span className="text-primary">Transaction Id : </span> {data?.order[0]?.transactionId}</span>
+          }
         <span className="text-base" ><span className="text-primary">Delivery Date : </span> {data?.order?.[0]?.expectedDelivery?.split('T')[0]}</span>
         </div>
         {data?.order && data.order[0] && (

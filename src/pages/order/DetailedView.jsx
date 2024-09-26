@@ -77,6 +77,7 @@ const DetailedView = () => {
       <div className="w-full flex flex-col justify-between items-start">
         <div className="w-full text font-bold md:text-2xl mt-3 flex flex-wrap justify-between">
           <span><span className="text-primary">Order</span>#{id}</span>
+          
 
           <div className="flex items-center">
             <button
@@ -101,6 +102,11 @@ const DetailedView = () => {
             </PDFDownloadLink>
           </div>
 
+        </div>
+
+        <div className="flex flex-col items-start ">
+        <span className="text-base" ><span className="text-primary">Transaction Id : </span> {data?.order[0]?.transactionId}</span>
+        <span className="text-base" ><span className="text-primary">Delivery Date : </span> {data?.order?.[0]?.expectedDelivery?.split('T')[0]}</span>
         </div>
         {data?.order && data.order[0] && (
           <div className="font-medium text-gray-500 capitalize flex flex-wrap items-center gap-2 mt-2">

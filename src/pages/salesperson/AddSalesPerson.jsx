@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReqLoader from "../../components/loader/ReqLoader";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { AddSalesPersonRoute } from "../../utils/Endpoint"; // <-- define this in your endpoints
+import { AddSalesPersonRoute } from "../../utils/Endpoint";
+
 
 const AddSalesPerson = () => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   const [salesPersonData, setSalesPersonData] = useState({
     name: "",
     email: "",
@@ -38,6 +42,7 @@ const AddSalesPerson = () => {
       setLoading(true);
       const response = await axios.post(AddSalesPersonRoute, salesPersonData);
       toast.success(response?.data?.msg || "Salesperson added successfully!");
+      navigate("/admin/salesperson");
 
       setSalesPersonData({
         name: "",

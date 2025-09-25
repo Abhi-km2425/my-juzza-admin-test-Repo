@@ -40,3 +40,7 @@ export const GetCouponRoute = '/api/admin/coupon'
 export const GetAllCouponRoute = '/api/admin/coupon'
 export const UpdateCouponRoute = '/api/admin/coupon'
 export const CouponStatusRoute = '/api/admin/coupon/status'
+
+//salesperson
+export const AddSalesPersonRoute = '/api/admin/salesperson'
+

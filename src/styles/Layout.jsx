@@ -1,16 +1,16 @@
-import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 
 // ICONS-----------------------------------------------------
-import { RxDashboard } from "react-icons/rx";
+import { CiShoppingCart } from "react-icons/ci";
+import { FiUsers } from "react-icons/fi";
+import { IoMdPerson } from "react-icons/io";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
+import { RiCoupon3Line } from "react-icons/ri";
+import { RxDashboard } from "react-icons/rx";
 import { TbCategory2 } from "react-icons/tb";
 import { useLocation } from "react-router-dom";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FiUsers } from "react-icons/fi";
-import { CiShoppingCart } from "react-icons/ci";
-import { RiCoupon3Line } from "react-icons/ri";
 
 const sideBar = [
   {
@@ -26,7 +26,13 @@ const sideBar = [
     icon: <MdOutlineProductionQuantityLimits size={23} />,
   },
   {
-    id: 2,
+    id: 3,
+    name: "Salesperson",
+    path: "/admin/salesperson",
+    icon: <IoMdPerson size={23} />,
+  },
+  {
+    id: 4,
     name: "Coupons",
     path: "/admin/coupons",
     icon: <RiCoupon3Line size={23} />,

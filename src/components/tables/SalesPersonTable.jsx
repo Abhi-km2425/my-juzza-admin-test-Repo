@@ -1,70 +1,68 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdChecklistRtl, MdFilterListOff } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { GetallSalesPersonRoute } from "../../utils/Endpoint";
 
 const SalesPersonTable = () => {
   const navigate = useNavigate();
+  const axios = useAxiosPrivate();
 
-  // Dummy data
-  const data = [
-    {
-      _id: "1",
-      p_name: "John Doe",
-      email: "john.doe@example.com",
-      region: "North",
-      quantity: 25,
-      availability: true,
-    },
-    {
-      _id: "2",
-      p_name: "Jane Smith",
-      email: "jane.smith@example.com",
-      region: "South",
-      quantity: 10,
-      availability: false,
-    },
-    {
-      _id: "3",
-      p_name: "Arjun Kumar",
-      email: "arjun.kumar@example.com",
-      region: "East",
-      quantity: 12,
-      availability: true,
-    },
-  ];
+  // State
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [regionFilter, setRegionFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
+  // Fetch Salespersons
+  useEffect(() => {
+    const fetchSalespersons = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(GetallSalesPersonRoute);
+        setData(res?.data?.salespersons || []); 
+      } catch (error) {
+        console.error("Error fetching salespersons:", error);
+        toast.error(error?.response?.data?.msg || "Failed to load salespersons");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSalespersons();
+  }, [axios]);
+
   // Filtered Data
   const filteredData = data.filter((row) => {
     const matchesSearch =
-      row.p_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.email.toLowerCase().includes(searchTerm.toLowerCase());
+      row.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRegion =
       regionFilter === "All" || row.region === regionFilter;
 
     const matchesStatus =
       statusFilter === "All" ||
-      (statusFilter === "Active" && row.availability) ||
-      (statusFilter === "Inactive" && !row.availability);
+      (statusFilter === "Active" && row.status) ||
+      (statusFilter === "Inactive" && !row.status);
 
     return matchesSearch && matchesRegion && matchesStatus;
   });
 
-  // Dummy handlers
+  // Toggle status handler
   const clickDelete = (row) => {
-    alert(`Toggling status for ${row.p_name}`);
+    toast.info(`Toggling status for ${row.name}`);
+   
   };
 
   return (
     <div className="space-y-4">
       {/* 🔍 Filter Section */}
       <div className="bg-white p-4 rounded-lg shadow flex flex-wrap items-center gap-4">
-        {/* Search by name/email */}
         <input
           type="text"
           placeholder="Search by name or email"
@@ -73,20 +71,7 @@ const SalesPersonTable = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        {/* Region filter */}
-        <select
-          className="border rounded px-3 py-2"
-          value={regionFilter}
-          onChange={(e) => setRegionFilter(e.target.value)}
-        >
-          <option value="All">All Regions</option>
-          <option value="North">North</option>
-          <option value="South">South</option>
-          <option value="East">East</option>
-          <option value="West">West</option>
-        </select>
-
-        {/* Status filter */}
+        
         <select
           className="border rounded px-3 py-2"
           value={statusFilter}
@@ -105,62 +90,69 @@ const SalesPersonTable = () => {
             <tr className="bg-primary text-white">
               <th className="py-2 px-4 border-b border-r">Name</th>
               <th className="py-2 px-4 border-b border-r">Email</th>
-              <th className="py-2 px-4 border-b border-r">Region</th>
-              <th className="py-2 px-4 border-b border-r">Assigned Products</th>
+              <th className="py-2 px-4 border-b border-r">Phone</th>
+             
               <th className="py-2 px-4 border-b border-r">Status</th>
               <th className="py-2 px-4 border-b border-r">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredData.map((row) => (
-              <tr key={row._id}>
-                <td className="py-2 px-4 border-b border-r capitalize">
-                  {row?.p_name}
-                </td>
-                <td className="py-2 px-4 border-b border-r">{row?.email}</td>
-                <td className="py-2 px-4 border-b border-r">{row?.region}</td>
-                <td className="py-2 px-4 border-b border-r">
-                  {row?.quantity === 0 ? "Out of Stock" : row?.quantity}
-                </td>
-                <td className="py-2 px-4 border-b border-r">
-                  {row?.availability ? "Active" : "Inactive"}
-                </td>
-                <td className="py-2 px-4 border-b border-r">
-                  <div className="flex justify-center gap-5 cursor-pointer">
-                    {/* View button */}
-                    <button
-                      className="text-blue-500 underline"
-                      onClick={() =>
-                        navigate(`/admin/salesperson/view/${row._id}`)
-                      }
-                    >
-                      View
-                    </button>
-
-                    <div>
-                      {row?.availability ? (
-                        <MdChecklistRtl
-                          className="text-green-500"
-                          onClick={() => clickDelete(row)}
-                        />
-                      ) : (
-                        <MdFilterListOff
-                          className="text-red-500"
-                          onClick={() => clickDelete(row)}
-                        />
-                      )}
-                    </div>
-                  </div>
+            {loading ? (
+              <tr>
+                <td colSpan="6" className="text-center py-4">
+                  Loading...
                 </td>
               </tr>
-            ))}
+            ) : filteredData.length > 0 ? (
+              filteredData.map((row) => (
+                <tr key={row._id}>
+                  <td className="py-2 px-4 border-b border-r capitalize">
+                    {row?.name}
+                  </td>
+                  <td className="py-2 px-4 border-b border-r">{row?.email}</td>
+                  <td className="py-2 px-4 border-b border-r">{row?.phone}</td>
+                  
+                  <td className="py-2 px-4 border-b border-r">
+                    {row?.status ? "Active" : "Inactive"}
+                  </td>
+                  <td className="py-2 px-4 border-b border-r">
+                    <div className="flex justify-center gap-5 cursor-pointer">
+                      <button
+                        className="text-blue-500 underline"
+                        onClick={() =>
+                          navigate(`/admin/salesperson/${row._id}`)
+                        }
+                      >
+                        View
+                      </button>
+
+                      <div>
+                        {row?.availability ? (
+                          <MdChecklistRtl
+                            className="text-green-500"
+                            onClick={() => clickDelete(row)}
+                          />
+                        ) : (
+                          <MdFilterListOff
+                            className="text-red-500"
+                            onClick={() => clickDelete(row)}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center py-4">
+                  No Data Available
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-
-        {filteredData.length === 0 && (
-          <p className="text-center p-4">No Data Available</p>
-        )}
       </div>
     </div>
   );

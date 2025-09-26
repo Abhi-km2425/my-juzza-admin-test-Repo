@@ -45,5 +45,8 @@ export const CouponStatusRoute = '/api/admin/coupon/status'
 //salesperson
 export const AddSalesPersonRoute = '/api/admin/salesperson'
 export const GetallSalesPersonRoute = '/api/admin/salespersons?page=1&limit=10'
+export const GetSalesPersonRoute = '/api/admin/salesperson'
+export const GetSalesPersonProductsRoute = '/api/admin/salesperson'
+export const UpdateSalesPersonProductsRoute = '/api/admin/salesperson'
 
 

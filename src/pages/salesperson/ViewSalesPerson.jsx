@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { MdCancel, MdCheckCircle } from "react-icons/md";
+import { MdCancel, MdCheckCircle, MdContentCopy, MdAnalytics } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -22,6 +22,8 @@ const ViewSalesPerson = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [copiedLink, setCopiedLink] = useState(null);
+  const [assignedProducts, setAssignedProducts] = useState([]);
 
   useEffect(() => {
     const fetchSalesperson = async () => {
@@ -66,7 +68,10 @@ const ViewSalesPerson = () => {
   const fetchAssignedProducts = async () => {
     try {
       const response = await axios.get(`${GetSalesPersonProductsRoute}/${id}/products?page=1&limit=100`);
-      const assignedIds = response.data?.assignedProducts?.map(item => item.product._id) || [];
+      const assignedProductsData = response.data?.assignedProducts || [];
+      const assignedIds = assignedProductsData.map(item => item.product._id) || [];
+      
+      setAssignedProducts(assignedProductsData);
       setAssignedProductIds(assignedIds);
       setSelectedProducts(assignedIds);
     } catch (error) {
@@ -121,23 +126,30 @@ const ViewSalesPerson = () => {
         productIds: selectedProducts
       });
       
-      // Update salesperson data with the response
-      if (response.data?.salesperson) {
-        setSalesperson(response.data.salesperson);
-      }
-      
       toast.success(response.data?.msg || "Product assignments updated successfully");
       setAssignProductModal(false);
       
-      // Refresh salesperson data to get updated assigned products
-      const updatedResponse = await axios.get(`${GetSalesPersonRoute}/${id}`);
-      setSalesperson(updatedResponse.data.salesperson);
+      // Refresh assigned products data
+      await fetchAssignedProducts();
       
     } catch (error) {
       console.error(error);
       toast.error(error?.response?.data?.msg || "Failed to update assignments");
     } finally {
       setIsAssigning(false);
+    }
+  };
+
+  // Copy link to clipboard function
+  const copyToClipboard = async (link, productId) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedLink(productId);
+      toast.success("Link copied to clipboard!");
+      setTimeout(() => setCopiedLink(null), 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      toast.error("Failed to copy link");
     }
   };
 
@@ -216,30 +228,53 @@ const ViewSalesPerson = () => {
         </div>
 
         <div className="divide-y">
-          {salesperson.assignedProducts?.length > 0 ? (
-            salesperson.assignedProducts.map((product) => (
+          {assignedProducts?.length > 0 ? (
+            assignedProducts.map((item) => (
               <div
-                key={product._id}
-                className="flex items-center gap-4 py-3 cursor-pointer hover:bg-gray-50"
-                onClick={() =>
-                  navigate(`/admin/salesperson/product-analytics/${product._id}`)
-                }
+                key={item._id}
+                className="flex items-center gap-4 py-3"
               >
                 <img
-                  src={product.cover?.location || "https://via.placeholder.com/60"}
-                  alt={product.p_name}
+                  src={item.product.image || "https://via.placeholder.com/60"}
+                  alt={item.product.name}
                   className="w-16 h-16 object-cover rounded"
                 />
                 <div className="flex-1">
-                  <p className="font-semibold">{product.p_name}</p>
-                  <p className="text-sm text-gray-500">Price: ₹{product.finalPrice}</p>
+                  <p className="font-semibold">{item.product.name}</p>
+                  <p className="text-sm text-gray-500">Price: ₹{item.product.price}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-gray-600">Referral Link:</span>
+                    <span className="text-xs text-blue-600 font-mono bg-gray-100 px-2 py-1 rounded">
+                      {item.copyData?.link}
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(item.copyData?.link, item._id)}
+                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                      title="Copy link"
+                    >
+                      <MdContentCopy 
+                        className={`text-sm ${copiedLink === item._id ? 'text-green-500' : 'text-gray-500'}`} 
+                      />
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  {product.availability ? (
-                    <MdCheckCircle className="text-green-500 text-xl" />
-                  ) : (
-                    <MdCancel className="text-red-500 text-xl" />
-                  )}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    {item.product.availability ? (
+                      <MdCheckCircle className="text-green-500 text-lg" />
+                    ) : (
+                      <MdCancel className="text-red-500 text-lg" />
+                    )}
+                  </div>
+                  <button
+                    onClick={() =>
+                      navigate(`/admin/salesperson/product-analytics/${item.product._id}`)
+                    }
+                    className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                  >
+                    <MdAnalytics className="text-sm" />
+                    <span>View Analytics</span>
+                  </button>
                 </div>
               </div>
             ))
@@ -274,7 +309,7 @@ const ViewSalesPerson = () => {
           <div>
             <p className="text-gray-500">Total Products</p>
             <p className="font-bold">
-              {salesperson.assignedProducts?.length || "-"}
+              {assignedProducts?.length || "-"}
             </p>
           </div>
         </div>

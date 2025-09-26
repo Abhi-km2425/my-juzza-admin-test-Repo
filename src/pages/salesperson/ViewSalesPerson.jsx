@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { IoClose } from "react-icons/io5";
+import { MdCancel, MdCheckCircle } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { MdCheckCircle, MdCancel, MdPending } from "react-icons/md";
-import { IoClose } from "react-icons/io5";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { GetProducts, GetSalesPersonRoute, GetSalesPersonProductsRoute, UpdateSalesPersonProductsRoute } from "../../utils/Endpoint";
+import { GetProducts, GetSalesPersonProductsRoute, GetSalesPersonRoute, UpdateSalesPersonProductsRoute } from "../../utils/Endpoint";
 
 const ViewSalesPerson = () => {
   const { id } = useParams();
@@ -45,7 +45,7 @@ const ViewSalesPerson = () => {
     try {
       setProductLoading(true);
       const response = await axios.get(`${GetProducts}`);
-      // Since API doesn't support pagination, we'll handle it client-side
+    
       const allProds = response.data || [];
       setTotalProducts(allProds.length);
       
@@ -326,7 +326,7 @@ const ViewSalesPerson = () => {
                 </div>
               ) : (
                 <>
-                  {/* Products List - Scrollable */}
+                
                   <div className="flex-1 overflow-y-auto p-6 py-4">
                     <div className="space-y-3">
                       {allProducts.map((product) => {
@@ -369,7 +369,7 @@ const ViewSalesPerson = () => {
                     </div>
                   </div>
 
-                  {/* Pagination Controls - Fixed */}
+               
                   {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 p-6 py-4 border-t flex-shrink-0">
                       <button

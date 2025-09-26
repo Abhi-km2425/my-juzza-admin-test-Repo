@@ -1,201 +1,185 @@
-import { useState } from "react";
-import { FaBoxOpen, FaChartLine, FaDollarSign, FaUsers } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaBoxOpen, FaChartLine, FaDollarSign, FaMoneyBillWave, FaMousePointer, FaUserCheck, FaUsers } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { GetProductAnalytics } from "../../utils/Endpoint";
 
 const ProductAnalytics = () => {
+  const { id } = useParams();
+  const axios = useAxiosPrivate();
+
   const [filters, setFilters] = useState({
     date: "last30",
     region: "all",
     salesperson: "all",
   });
 
-  // Dummy product info
-  const product = {
-    name: "SuperWidget Pro",
-    id: "SWP-12345",
-  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Dummy stats
-  const stats = {
-    totalSales: 550,
-    totalRevenue: "$120,000",
-    ordersCount: 320,
-    activeSalespersons: 18,
-  };
+  // API state
+  const [product, setProduct] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
 
-  // Dummy table data
-  const salesData = [
-    {
-      id: 1,
-      customer: "Alice Johnson",
-      amount: "$1,200",
-      orders: 2,
-      salesperson: "John Doe",
-      date: "2025-09-01",
-    },
-    {
-      id: 2,
-      customer: "Bob Smith",
-      amount: "$800",
-      orders: 1,
-      salesperson: "Jane Smith",
-      date: "2025-09-03",
-    },
-    {
-      id: 3,
-      customer: "Carlos Mendes",
-      amount: "$2,500",
-      orders: 3,
-      salesperson: "Arjun Kumar",
-      date: "2025-09-05",
-    },
-  ];
+  // Fetch data
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await axios.get(`${GetProductAnalytics}/${id}`);
+        const data = res.data;
+
+        setProduct(data.product);
+        setAnalytics(data.analytics);
+      } catch (err) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [id, filters, axios]);
+
+  if (loading) {
+    return <p className="p-6">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="p-6 text-red-500">Error: {error}</p>;
+  }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 space-y-6">
       {/* Back button */}
       <div className="flex justify-start">
-  <button
-    className="px-4 py-2 bg-primary rounded text-white hover:text-black hover:bg-gray-300"
-    onClick={() => navigate(-1)}
-  >
-    ← Back
-  </button>
-</div>
+        <button
+          className="px-4 py-2 bg-primary rounded text-white hover:text-black hover:bg-gray-300"
+          onClick={() => window.history.back()}
+        >
+          ← Back
+        </button>
+      </div>
 
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{product.name}</h1>
-        <p className="text-gray-600">Product ID: {product.id}</p>
+        <h1 className="text-2xl font-bold"><span className="font-normal">Product: </span>{product?.p_name}</h1>
+        {/* <p className="text-gray-600">Product ID: {product?._id}</p> */}
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid xl:grid-cols-4  grid-cols-2 gap-6">
         <div className="bg-white shadow rounded-lg p-4 flex items-center gap-4">
           <FaChartLine className="text-blue-500 text-2xl" />
           <div>
             <p className="text-gray-500">Total Sales</p>
-            <p className="text-lg font-bold">{stats.totalSales}</p>
+            <p className="text-lg font-bold">{product?.totalSales}</p>
           </div>
         </div>
         <div className="bg-white shadow rounded-lg p-4 flex items-center gap-4">
           <FaDollarSign className="text-green-500 text-2xl" />
           <div>
-            <p className="text-gray-500">Total Revenue</p>
-            <p className="text-lg font-bold">{stats.totalRevenue}</p>
+            <p className="text-gray-500">Total Quantity Sold</p>
+            <p className="text-lg font-bold">{analytics?.totalQuantitySold}</p>
           </div>
         </div>
         <div className="bg-white shadow rounded-lg p-4 flex items-center gap-4">
           <FaBoxOpen className="text-purple-500 text-2xl" />
           <div>
-            <p className="text-gray-500">Orders Count</p>
-            <p className="text-lg font-bold">{stats.ordersCount}</p>
+            <p className="text-gray-500">Total Revenue</p>
+            <p className="text-lg font-bold">{analytics?.totalRevenue}</p>
           </div>
         </div>
         <div className="bg-white shadow rounded-lg p-4 flex items-center gap-4">
-          <FaUsers className="text-orange-500 text-2xl" />
+          <FaBoxOpen className="text-orange-500 text-2xl" />
           <div>
-            <p className="text-gray-500">Active Salespersons</p>
-            <p className="text-lg font-bold">{stats.activeSalespersons}</p>
+            <p className="text-gray-500">Total Orders</p>
+            <p className="text-lg font-bold">{analytics?.totalOrders}</p>
           </div>
         </div>
       </div>
 
-      {/* Filters Section */}
-      <div className="bg-white shadow rounded-lg p-4 flex justify-between items-center">
-        <div className="flex gap-4">
-          {/* Date filter */}
-          <select
-            className="border rounded px-3 py-2"
-            value={filters.date}
-            onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-          >
-            <option value="last30">Last 30 Days</option>
-            <option value="last90">Last 90 Days</option>
-            <option value="year">This Year</option>
-          </select>
-
-          {/* Region filter */}
-          <select
-            className="border rounded px-3 py-2"
-            value={filters.region}
-            onChange={(e) => setFilters({ ...filters, region: e.target.value })}
-          >
-            <option value="all">All Regions</option>
-            <option value="north">North</option>
-            <option value="south">South</option>
-            <option value="east">East</option>
-            <option value="west">West</option>
-          </select>
-
-          {/* Salesperson filter */}
-          <select
-            className="border rounded px-3 py-2"
-            value={filters.salesperson}
-            onChange={(e) =>
-              setFilters({ ...filters, salesperson: e.target.value })
-            }
-          >
-            <option value="all">All Salespersons</option>
-            <option value="john">John Doe</option>
-            <option value="jane">Jane Smith</option>
-            <option value="arjun">Arjun Kumar</option>
-          </select>
-        </div>
-
-        {/* Export button */}
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          + Export Data
-        </button>
-      </div>
-
-      {/* Sales Overview Table */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-semibold mb-4">Sales Overview</h2>
+      {/* Salespersons Table */}
+      <div className="bg-white shadow rounded-lg p-6 overflow-scroll">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <FaUsers className="text-orange-500" /> Salespersons Analytics
+        </h2>
         <table className="min-w-full border">
           <thead className="bg-gray-100">
             <tr>
-              <th className="py-2 px-4 border">Customer Name</th>
-              <th className="py-2 px-4 border">Amount</th>
-              <th className="py-2 px-4 border">Order Count</th>
-              <th className="py-2 px-4 border">Salesperson</th>
-              <th className="py-2 px-4 border">Date of Sale</th>
+              <th className="py-2 px-4 border">Name</th>
+              <th className="py-2 px-4 border">Email</th>
+              <th className="py-2 px-4 border">Employee ID</th>
+              <th className="py-2 px-4 border">Sales Count</th>
+              <th className="py-2 px-4 border">Clicks</th>
+              <th className="py-2 px-4 border">Revenue</th>
+              <th className="py-2 px-4 border">Sales Link Code</th>
+              <th className="py-2 px-4 border">Conversion Rate</th>
+              <th className="py-2 px-4 border">Status</th>
             </tr>
           </thead>
           <tbody>
-            {salesData.map((row) => (
-              <tr key={row.id} className="text-center">
-                <td className="py-2 px-4 border">{row.customer}</td>
-                <td className="py-2 px-4 border">{row.amount}</td>
-                <td className="py-2 px-4 border">{row.orders}</td>
-                <td className="py-2 px-4 border">{row.salesperson}</td>
-                <td className="py-2 px-4 border">{row.date}</td>
+            {analytics?.salespersons?.length > 0 ? (
+              analytics.salespersons.map((sp) => (
+                <tr key={sp.salesperson._id} className="text-center">
+                  <td className="py-2 px-4 border">{sp.salesperson.name}</td>
+                  <td className="py-2 px-4 border">{sp.salesperson.email}</td>
+                  <td className="py-2 px-4 border">{sp.salesperson.employeeId}</td>
+                  <td className="py-2 px-4 border">{sp.salesCount}</td>
+                  <td className="py-2 px-4 border">{sp.clickCount}</td>
+                  <td className="py-2 px-4 border">{sp.revenue}</td>
+                  <td className="py-2 px-4 border">{sp.salesLinkCode}</td>
+                  <td className="py-2 px-4 border">{sp.conversionRate}</td>
+                  <td className="py-2 px-4 border">
+                    {sp.active ? "Active" : "Inactive"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={8} className="py-4 text-gray-500">
+                  No salespersons assigned
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
-
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <p className="text-sm text-gray-600">Showing 1-3 of 50 results</p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 border rounded hover:bg-gray-100">
-              Prev
-            </button>
-            <button className="px-3 py-1 border rounded bg-blue-500 text-white">
-              1
-            </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-100">
-              2
-            </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-100">
-              3
-            </button>
-            <button className="px-3 py-1 border rounded hover:bg-gray-100">
-              Next
-            </button>
-          </div>
-        </div>
       </div>
+
+
+{/* Overall Analytics Summary */}
+<div className="bg-white shadow rounded-lg p-6">
+  <h2 className="text-lg font-semibold mb-6">Overall Summary</h2>
+
+  <div className="grid grid-cols-2 xl:grid-cols-4 gap-6">
+    <div className="bg-gray-50 shadow-sm rounded-lg p-4 flex flex-col items-center">
+      <FaUsers className="text-blue-500 text-2xl mb-2" />
+      <p className="text-gray-500">Total Assigned Salespersons</p>
+      <p className="text-lg font-bold">{analytics?.totalAssignedSalespersons}</p>
+    </div>
+
+    <div className="bg-gray-50 shadow-sm rounded-lg p-4 flex flex-col items-center">
+      <FaUserCheck className="text-green-500 text-2xl mb-2" />
+      <p className="text-gray-500">Active Salespersons</p>
+      <p className="text-lg font-bold">{analytics?.activeSalespersons}</p>
+    </div>
+
+    <div className="bg-gray-50 shadow-sm rounded-lg p-4 flex flex-col items-center">
+      <FaMousePointer className="text-purple-500 text-2xl mb-2" />
+      <p className="text-gray-500">Total Sales Link Clicks</p>
+      <p className="text-lg font-bold">{analytics?.totalSalesLinkClicks}</p>
+    </div>
+
+    <div className="bg-gray-50 shadow-sm rounded-lg p-4 flex flex-col items-center">
+      <FaMoneyBillWave className="text-yellow-500 text-2xl mb-2" />
+      <p className="text-gray-500">Total Sales Link Revenue</p>
+      <p className="text-lg font-bold">{analytics?.totalSalesLinkRevenue}</p>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 };

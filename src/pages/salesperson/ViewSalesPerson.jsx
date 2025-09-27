@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { MdCancel, MdCheckCircle } from "react-icons/md";
+import { MdCancel, MdCheckCircle, MdContentCopy, MdAnalytics } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -22,6 +22,16 @@ const ViewSalesPerson = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [copiedLink, setCopiedLink] = useState(null);
+  const [assignedProducts, setAssignedProducts] = useState([]);
+  const [assignedProductsPagination, setAssignedProductsPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalProducts: 0,
+    hasNext: false,
+    hasPrev: false
+  });
+  const [assignedProductsCurrentPage, setAssignedProductsCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchSalesperson = async () => {
@@ -62,13 +72,17 @@ const ViewSalesPerson = () => {
     }
   };
 
-  // Fetch assigned products for this salesperson - no pagination
-  const fetchAssignedProducts = async () => {
+  // Fetch assigned products for this salesperson with pagination
+  const fetchAssignedProducts = async (page = 1) => {
     try {
-      const response = await axios.get(`${GetSalesPersonProductsRoute}/${id}/products?page=1&limit=100`);
-      const assignedIds = response.data?.assignedProducts?.map(item => item.product._id) || [];
+      const response = await axios.get(`${GetSalesPersonProductsRoute}/${id}/products?page=${page}&limit=10`);
+      const assignedProductsData = response.data?.assignedProducts || [];
+      const assignedIds = assignedProductsData.map(item => item.product._id) || [];
+      
+      setAssignedProducts(assignedProductsData);
       setAssignedProductIds(assignedIds);
       setSelectedProducts(assignedIds);
+      setAssignedProductsPagination(response.data?.pagination || {});
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch assigned products");
@@ -80,7 +94,7 @@ const ViewSalesPerson = () => {
     setAssignProductModal(true);
     setCurrentPage(1);
     await fetchAllProducts(1, pageSize);
-    await fetchAssignedProducts();
+    await fetchAssignedProducts(1);
   };
 
   // Handle product selection
@@ -121,17 +135,11 @@ const ViewSalesPerson = () => {
         productIds: selectedProducts
       });
       
-      // Update salesperson data with the response
-      if (response.data?.salesperson) {
-        setSalesperson(response.data.salesperson);
-      }
-      
       toast.success(response.data?.msg || "Product assignments updated successfully");
       setAssignProductModal(false);
       
-      // Refresh salesperson data to get updated assigned products
-      const updatedResponse = await axios.get(`${GetSalesPersonRoute}/${id}`);
-      setSalesperson(updatedResponse.data.salesperson);
+      // Refresh assigned products data
+      await fetchAssignedProducts(assignedProductsCurrentPage);
       
     } catch (error) {
       console.error(error);
@@ -141,10 +149,45 @@ const ViewSalesPerson = () => {
     }
   };
 
+  // Copy link to clipboard function
+  const copyToClipboard = async (link, productId) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedLink(productId);
+      toast.success("Link copied to clipboard!");
+      setTimeout(() => setCopiedLink(null), 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      toast.error("Failed to copy link");
+    }
+  };
+
+  // Handle assigned products page navigation
+  const handleAssignedProductsPageChange = (page) => {
+    setAssignedProductsCurrentPage(page);
+    fetchAssignedProducts(page);
+  };
+
+  const handleAssignedProductsPrevPage = () => {
+    if (assignedProductsPagination.hasPrev) {
+      const newPage = assignedProductsCurrentPage - 1;
+      setAssignedProductsCurrentPage(newPage);
+      fetchAssignedProducts(newPage);
+    }
+  };
+
+  const handleAssignedProductsNextPage = () => {
+    if (assignedProductsPagination.hasNext) {
+      const newPage = assignedProductsCurrentPage + 1;
+      setAssignedProductsCurrentPage(newPage);
+      fetchAssignedProducts(newPage);
+    }
+  };
+
   // Initialize assigned products on component mount
   useEffect(() => {
     if (salesperson?.referralCode) {
-      fetchAssignedProducts();
+      fetchAssignedProducts(assignedProductsCurrentPage);
     }
   }, [salesperson?.referralCode]);
 
@@ -216,30 +259,53 @@ const ViewSalesPerson = () => {
         </div>
 
         <div className="divide-y">
-          {salesperson.assignedProducts?.length > 0 ? (
-            salesperson.assignedProducts.map((product) => (
+          {assignedProducts?.length > 0 ? (
+            assignedProducts.map((item) => (
               <div
-                key={product._id}
-                className="flex items-center gap-4 py-3 cursor-pointer hover:bg-gray-50"
-                onClick={() =>
-                  navigate(`/admin/salesperson/product-analytics/${product._id}`)
-                }
+                key={item._id}
+                className="flex items-center gap-4 py-3"
               >
                 <img
-                  src={product.cover?.location || "https://via.placeholder.com/60"}
-                  alt={product.p_name}
+                  src={item.product.image || "https://via.placeholder.com/60"}
+                  alt={item.product.name}
                   className="w-16 h-16 object-cover rounded"
                 />
                 <div className="flex-1">
-                  <p className="font-semibold">{product.p_name}</p>
-                  <p className="text-sm text-gray-500">Price: ₹{product.finalPrice}</p>
+                  <p className="font-semibold">{item.product.name}</p>
+                  <p className="text-sm text-gray-500">Price: ₹{item.product.price}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-gray-600">Referral Link:</span>
+                    <span className="text-xs text-blue-600 font-mono bg-gray-100 px-2 py-1 rounded">
+                      {item.copyData?.link}
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(item.copyData?.link, item._id)}
+                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                      title="Copy link"
+                    >
+                      <MdContentCopy 
+                        className={`text-sm ${copiedLink === item._id ? 'text-green-500' : 'text-gray-500'}`} 
+                      />
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  {product.availability ? (
-                    <MdCheckCircle className="text-green-500 text-xl" />
-                  ) : (
-                    <MdCancel className="text-red-500 text-xl" />
-                  )}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    {item.product.availability ? (
+                      <MdCheckCircle className="text-green-500 text-lg" />
+                    ) : (
+                      <MdCancel className="text-red-500 text-lg" />
+                    )}
+                  </div>
+                  <button
+                    onClick={() =>
+                      navigate(`/admin/salesperson/product-analytics/${item.product._id}`)
+                    }
+                    className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                  >
+                    <MdAnalytics className="text-sm" />
+                    <span>View Analytics</span>
+                  </button>
                 </div>
               </div>
             ))
@@ -247,6 +313,55 @@ const ViewSalesPerson = () => {
             <p className="text-gray-500">No products assigned</p>
           )}
         </div>
+
+        {/* Assigned Products Pagination */}
+        {assignedProductsPagination.totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-between border-t pt-4">
+            <div className="text-sm text-gray-600">
+              Showing {((assignedProductsPagination.currentPage - 1) * 10) + 1} to {Math.min(assignedProductsPagination.currentPage * 10, assignedProductsPagination.totalProducts)} of {assignedProductsPagination.totalProducts} assigned products
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAssignedProductsPrevPage}
+                disabled={!assignedProductsPagination.hasPrev}
+                className={`px-3 py-1 rounded border ${
+                  assignedProductsPagination.hasPrev 
+                    ? 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300' 
+                    : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                }`}
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: assignedProductsPagination.totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handleAssignedProductsPageChange(page)}
+                  className={`px-3 py-1 rounded border ${
+                    page === assignedProductsPagination.currentPage
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button
+                onClick={handleAssignedProductsNextPage}
+                disabled={!assignedProductsPagination.hasNext}
+                className={`px-3 py-1 rounded border ${
+                  assignedProductsPagination.hasNext 
+                    ? 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300' 
+                    : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Analytics Section */}
@@ -274,7 +389,7 @@ const ViewSalesPerson = () => {
           <div>
             <p className="text-gray-500">Total Products</p>
             <p className="font-bold">
-              {salesperson.assignedProducts?.length || "-"}
+              {assignedProducts?.length || "-"}
             </p>
           </div>
         </div>

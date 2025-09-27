@@ -12,6 +12,14 @@ const SalesPersonTable = () => {
   // State
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalSalespersons: 0,
+    hasNext: false,
+    hasPrev: false
+  });
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,8 +31,9 @@ const SalesPersonTable = () => {
     const fetchSalespersons = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(GetallSalesPersonRoute);
+        const res = await axios.get(`${GetallSalesPersonRoute}?page=${currentPage}&limit=10`);
         setData(res?.data?.salespersons || []); 
+        setPagination(res?.data?.pagination || {});
       } catch (error) {
         console.error("Error fetching salespersons:", error);
         toast.error(error?.response?.data?.msg || "Failed to load salespersons");
@@ -34,7 +43,7 @@ const SalesPersonTable = () => {
     };
 
     fetchSalespersons();
-  }, [axios]);
+  }, [axios, currentPage]);
 
   // Filtered Data
   const filteredData = data.filter((row) => {
@@ -57,6 +66,23 @@ const SalesPersonTable = () => {
   const clickDelete = (row) => {
     toast.info(`Toggling status for ${row.name}`);
    
+  };
+
+  // Page navigation handlers
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePrevPage = () => {
+    if (pagination.hasPrev) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (pagination.hasNext) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   return (
@@ -154,6 +180,55 @@ const SalesPersonTable = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            Showing {((pagination.currentPage - 1) * 10) + 1} to {Math.min(pagination.currentPage * 10, pagination.totalSalespersons)} of {pagination.totalSalespersons} salespersons
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrevPage}
+              disabled={!pagination.hasPrev}
+              className={`px-3 py-1 rounded border ${
+                pagination.hasPrev 
+                  ? 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300' 
+                  : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+              }`}
+            >
+              Previous
+            </button>
+            
+            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-3 py-1 rounded border ${
+                  page === pagination.currentPage
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            
+            <button
+              onClick={handleNextPage}
+              disabled={!pagination.hasNext}
+              className={`px-3 py-1 rounded border ${
+                pagination.hasNext 
+                  ? 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300' 
+                  : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

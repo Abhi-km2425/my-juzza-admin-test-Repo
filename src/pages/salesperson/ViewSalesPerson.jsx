@@ -24,6 +24,14 @@ const ViewSalesPerson = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [copiedLink, setCopiedLink] = useState(null);
   const [assignedProducts, setAssignedProducts] = useState([]);
+  const [assignedProductsPagination, setAssignedProductsPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalProducts: 0,
+    hasNext: false,
+    hasPrev: false
+  });
+  const [assignedProductsCurrentPage, setAssignedProductsCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchSalesperson = async () => {
@@ -64,16 +72,17 @@ const ViewSalesPerson = () => {
     }
   };
 
-  // Fetch assigned products for this salesperson - no pagination
-  const fetchAssignedProducts = async () => {
+  // Fetch assigned products for this salesperson with pagination
+  const fetchAssignedProducts = async (page = 1) => {
     try {
-      const response = await axios.get(`${GetSalesPersonProductsRoute}/${id}/products?page=1&limit=100`);
+      const response = await axios.get(`${GetSalesPersonProductsRoute}/${id}/products?page=${page}&limit=10`);
       const assignedProductsData = response.data?.assignedProducts || [];
       const assignedIds = assignedProductsData.map(item => item.product._id) || [];
       
       setAssignedProducts(assignedProductsData);
       setAssignedProductIds(assignedIds);
       setSelectedProducts(assignedIds);
+      setAssignedProductsPagination(response.data?.pagination || {});
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch assigned products");
@@ -85,7 +94,7 @@ const ViewSalesPerson = () => {
     setAssignProductModal(true);
     setCurrentPage(1);
     await fetchAllProducts(1, pageSize);
-    await fetchAssignedProducts();
+    await fetchAssignedProducts(1);
   };
 
   // Handle product selection
@@ -130,7 +139,7 @@ const ViewSalesPerson = () => {
       setAssignProductModal(false);
       
       // Refresh assigned products data
-      await fetchAssignedProducts();
+      await fetchAssignedProducts(assignedProductsCurrentPage);
       
     } catch (error) {
       console.error(error);
@@ -153,10 +162,32 @@ const ViewSalesPerson = () => {
     }
   };
 
+  // Handle assigned products page navigation
+  const handleAssignedProductsPageChange = (page) => {
+    setAssignedProductsCurrentPage(page);
+    fetchAssignedProducts(page);
+  };
+
+  const handleAssignedProductsPrevPage = () => {
+    if (assignedProductsPagination.hasPrev) {
+      const newPage = assignedProductsCurrentPage - 1;
+      setAssignedProductsCurrentPage(newPage);
+      fetchAssignedProducts(newPage);
+    }
+  };
+
+  const handleAssignedProductsNextPage = () => {
+    if (assignedProductsPagination.hasNext) {
+      const newPage = assignedProductsCurrentPage + 1;
+      setAssignedProductsCurrentPage(newPage);
+      fetchAssignedProducts(newPage);
+    }
+  };
+
   // Initialize assigned products on component mount
   useEffect(() => {
     if (salesperson?.referralCode) {
-      fetchAssignedProducts();
+      fetchAssignedProducts(assignedProductsCurrentPage);
     }
   }, [salesperson?.referralCode]);
 
@@ -282,6 +313,55 @@ const ViewSalesPerson = () => {
             <p className="text-gray-500">No products assigned</p>
           )}
         </div>
+
+        {/* Assigned Products Pagination */}
+        {assignedProductsPagination.totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-between border-t pt-4">
+            <div className="text-sm text-gray-600">
+              Showing {((assignedProductsPagination.currentPage - 1) * 10) + 1} to {Math.min(assignedProductsPagination.currentPage * 10, assignedProductsPagination.totalProducts)} of {assignedProductsPagination.totalProducts} assigned products
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAssignedProductsPrevPage}
+                disabled={!assignedProductsPagination.hasPrev}
+                className={`px-3 py-1 rounded border ${
+                  assignedProductsPagination.hasPrev 
+                    ? 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300' 
+                    : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                }`}
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: assignedProductsPagination.totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handleAssignedProductsPageChange(page)}
+                  className={`px-3 py-1 rounded border ${
+                    page === assignedProductsPagination.currentPage
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button
+                onClick={handleAssignedProductsNextPage}
+                disabled={!assignedProductsPagination.hasNext}
+                className={`px-3 py-1 rounded border ${
+                  assignedProductsPagination.hasNext 
+                    ? 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300' 
+                    : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Analytics Section */}

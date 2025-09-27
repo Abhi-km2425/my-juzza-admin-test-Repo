@@ -1,12 +1,12 @@
 import {
-  IoCreateOutline,
-  IoTrashBinOutline,
-  IoOpenOutline,
+  IoCreateOutline
 } from "react-icons/io5";
-import { FaListCheck } from "react-icons/fa6";
 import { MdChecklistRtl, MdFilterListOff } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandler }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="overflow-x-auto overflow-y-auto rounded-lg shadow-lg text-sm bg-white">
       <table className="min-w-full bg-white ">
@@ -24,7 +24,11 @@ const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandl
 
         <tbody>
           {data?.map((row, i) => (
-            <tr key={row._id}>
+            <tr
+              key={row._id}
+              className="cursor-pointer hover:bg-gray-100"
+              onClick={() => navigate(`/admin/salesperson/product-analytics/${row._id}`)}
+            >
               <td className="py-2 px-4 border-b border-r">
                 {(page - 1) * 10 + i + 1}
               </td>

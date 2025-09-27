@@ -1,19 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
-import Login from "./pages/Login";
-import Layout from "./styles/Layout";
+import CategoryList from "./pages/category/CategoryList";
+import AddNewCoupon from "./pages/coupons/AddNewCoupon";
+import CouponList from "./pages/coupons/CouponList";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import DetailedView from "./pages/order/DetailedView";
+import OrdersList from "./pages/order/OrdersList";
+import AddNewProduct from "./pages/products/AddNewProduct";
 import ProductList from "./pages/products/ProductList";
 import ProductView from "./pages/products/ProductView";
-import AuthProtector from "./protectors/AuthProtector";
-import AdminProtector from "./protectors/AdminProtector";
-import CategoryList from "./pages/category/CategoryList";
-import OrdersList from "./pages/order/OrdersList";
-import DetailedView from "./pages/order/DetailedView";
+import AddSalesPerson from "./pages/salesperson/AddSalesPerson";
+import ProductAnalytics from "./pages/salesperson/ProductAnalytics";
+import SalesPeopleList from "./pages/salesperson/SalesPeopleList";
+import ViewSalesPerson from "./pages/salesperson/ViewSalesPerson";
 import UsersList from "./pages/users/UsersList";
-import AddNewProduct from "./pages/products/AddNewProduct";
-import CouponList from "./pages/coupons/CouponList";
-import AddNewCoupon from "./pages/coupons/AddNewCoupon";
+import AdminProtector from "./protectors/AdminProtector";
+import AuthProtector from "./protectors/AuthProtector";
+import Layout from "./styles/Layout";
 
 function App() {
 
@@ -30,6 +34,10 @@ function App() {
             <Route path="/" element={<AdminProtector />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/products" element={<ProductList />} />
+              <Route path="/admin/salesperson" element={<SalesPeopleList />} />
+              <Route path="/admin/salesperson/add" element={<AddSalesPerson />} />
+              <Route path="/admin/salesperson/:id" element={<ViewSalesPerson />} />
+              <Route path="/admin/salesperson/product-analytics/:id" element={<ProductAnalytics />} />
               <Route path="/admin/products/add-product" element={<AddNewProduct />} />
               <Route path="/admin/products/view" element={<ProductView />} />
               <Route path="/admin/category" element={<CategoryList />} />

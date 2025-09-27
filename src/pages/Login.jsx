@@ -8,6 +8,8 @@ import { setAccessToken, setRefreshToken } from "../redux/slices/TokenReducer";
 import bgIMge from "../../public/assets/login/cover pic.png";
 import logo from "../../public/assets/Logo/logo-juzza.png";
 import axios from "../api/axios";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [error, setError] = useState({});
@@ -19,11 +21,21 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = useSelector((state) => state?.auth?.userInfo);
+  const [pwdtype, setPwdtype] = useState("password")
+
+  const togglePwdtype = () => {
+    if (pwdtype === "text") {
+      setPwdtype("password")
+    }
+    else if (pwdtype === "password") {
+      setPwdtype("text")
+    }
+  }
 
   useEffect(() => {
     if (userData?.userInfo?.role === "admin") {
       navigate("/admin/dashboard");
-    }else{
+    } else {
       navigate("/login");
     }
   }, [userData, navigate]);
@@ -58,7 +70,7 @@ const Login = () => {
         dispatch(setUser(response.data?.userInfo));
         dispatch(setAccessToken(response.data?.accessToken));
         dispatch(setRefreshToken(response.data?.refreshToken));
-        
+
         toast.success(response?.data?.email && "Successfully Login");
       }
     } catch (error) {
@@ -99,14 +111,14 @@ const Login = () => {
                 placeholder="Email"
               />
               {error.email && (
-                    <span className="text-[12px] py-2 text-red-600">
-                      {error.email}
-                    </span>
-                  )}
+                <span className="text-[12px] py-2 text-red-600">
+                  {error.email}
+                </span>
+              )}
 
-              <div>
+              <div className="relative">
                 <input
-                  type="password"
+                  type={pwdtype}
                   name="password"
                   onChange={changeHandler}
                   required
@@ -114,10 +126,24 @@ const Login = () => {
                   placeholder="Password"
                 />
                 {error.password && (
-                    <span className=" text-[12px] py-2 text-red-600">
-                      {error.password}
-                    </span>
-                  )}
+                  <span className=" text-[12px] py-2 text-red-600">
+                    {error.password}
+                  </span>
+                )}
+
+                {
+                  pwdtype === "text"
+                    ?
+                    <FaRegEyeSlash
+                    onClick={togglePwdtype}
+                    className="absolute top-3 right-3 cursor-pointer "
+                    />
+                    :
+                    <FaRegEye
+                    onClick={togglePwdtype}
+                    className="absolute top-3 right-3 cursor-pointer "
+                    />
+                }
               </div>
 
               <div className="flex gap-3">

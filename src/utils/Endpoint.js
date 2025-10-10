@@ -1,6 +1,6 @@
 // export const baseUrl = "http://localhost:9000"
- export const baseUrl = "https://server.juzafoods.com"
-//  export const baseUrl = "https://juzza-backend-virid.vercel.app/"
+//  export const baseUrl = "https://server.juzafoods.com"
+ export const baseUrl = "https://juzza-backend-virid.vercel.app/"
 //  export const baseUrl = "https://server1.juzafoods.com"
 
 // auth
@@ -45,9 +45,11 @@ export const CouponStatusRoute = '/api/admin/coupon/status'
 
 //salesperson
 export const AddSalesPersonRoute = '/api/admin/salesperson'
-export const GetallSalesPersonRoute = '/api/admin/salespersons'
+export const GetallSalesPersonRoute = '/api/admin/salesperson/list'
 export const GetSalesPersonRoute = '/api/admin/salesperson'
 export const GetSalesPersonProductsRoute = '/api/admin/salesperson'
 export const UpdateSalesPersonProductsRoute = '/api/admin/salesperson'
+export const GetSalesPersonRecentSalesRoute = '/api/admin/salesperson'
+export const ToggleSalesPersonStatusRoute = '/api/admin/salesperson'
 
 

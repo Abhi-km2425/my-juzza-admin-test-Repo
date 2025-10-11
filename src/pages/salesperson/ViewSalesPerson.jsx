@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { MdContentCopy } from "react-icons/md";
-import { FaShoppingBag, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import { FaShoppingBag, FaToggleOn, FaToggleOff, FaKey } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { GetSalesPersonRoute, GetSalesPersonRecentSalesRoute, ToggleSalesPersonStatusRoute } from "../../utils/Endpoint";
+import { GetSalesPersonRoute, GetSalesPersonRecentSalesRoute, ToggleSalesPersonStatusRoute, ResetSalesPersonPasswordRoute } from "../../utils/Endpoint";
 
 const ViewSalesPerson = () => {
   const { id } = useParams();
@@ -15,6 +16,11 @@ const ViewSalesPerson = () => {
   const [loading, setLoading] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [toggleLoading, setToggleLoading] = useState(false);
+  
+  // Password Reset State
+  const [passwordResetModal, setPasswordResetModal] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
   
   // Recent Sales State
   const [recentSales, setRecentSales] = useState([]);
@@ -130,10 +136,42 @@ const ViewSalesPerson = () => {
     }
   };
 
+  // Reset password function
+  const resetPassword = async () => {
+    if (!newPassword.trim()) {
+      toast.error("Please enter a new password");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    try {
+      setResetLoading(true);
+      const response = await axios.post(`${ResetSalesPersonPasswordRoute}/${id}/password`, {
+        newPassword: newPassword
+      });
+      
+      toast.success(response?.data?.msg || "Password reset successfully!");
+      
+      // Close modal and reset form
+      setPasswordResetModal(false);
+      setNewPassword("");
+      
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      toast.error(error?.response?.data?.msg || "Failed to reset password");
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   if (loading) return <div className="p-6 text-center">Loading...</div>;
   if (!salespersonData) return <div className="p-6 text-center">No salesperson found.</div>;
 
-  const { salesperson, salesLink, productSales, recentOrders, analytics } = salespersonData;
+  const { salesperson, salesLink, productSales, analytics } = salespersonData;
 
   return (
     <div className="p-3 space-y-6">
@@ -146,30 +184,41 @@ const ViewSalesPerson = () => {
           ← Back
         </button>
         
-        {/* Toggle Status Button */}
-        <button
-          onClick={toggleSalespersonStatus}
-          disabled={toggleLoading}
-          className={`flex items-center gap-2 px-4 py-2 rounded font-semibold transition-colors ${
-            salespersonData?.salesperson?.status === 'active'
-              ? 'bg-red-100 text-red-700 hover:bg-red-200'
-              : 'bg-green-100 text-green-700 hover:bg-green-200'
-          } ${toggleLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {toggleLoading ? (
-            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-          ) : salespersonData?.salesperson?.status === 'active' ? (
-            <FaToggleOn className="text-lg" />
-          ) : (
-            <FaToggleOff className="text-lg" />
-          )}
-          {toggleLoading 
-            ? 'Updating...' 
-            : salespersonData?.salesperson?.status === 'active' 
-              ? 'Deactivate Salesperson' 
-              : 'Activate Salesperson'
-          }
-        </button>
+        <div className="flex gap-3">
+          {/* Reset Password Button */}
+          <button
+            onClick={() => setPasswordResetModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded font-semibold transition-colors bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+          >
+            <FaKey className="text-sm" />
+            Reset Password
+          </button>
+
+          {/* Toggle Status Button */}
+          <button
+            onClick={toggleSalespersonStatus}
+            disabled={toggleLoading}
+            className={`flex items-center gap-2 px-4 py-2 rounded font-semibold transition-colors ${
+              salesperson?.status === 'active'
+                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                : 'bg-green-100 text-green-700 hover:bg-green-200'
+            } ${toggleLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {toggleLoading ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+            ) : salesperson?.status === 'active' ? (
+              <FaToggleOn className="text-lg" />
+            ) : (
+              <FaToggleOff className="text-lg" />
+            )}
+            {toggleLoading 
+              ? 'Updating...' 
+              : salesperson?.status === 'active' 
+                ? 'Deactivate Salesperson' 
+                : 'Activate Salesperson'
+            }
+          </button>
+        </div>
       </div>
 
       <h1 className="text-2xl font-bold">Salesperson Details</h1>
@@ -178,20 +227,20 @@ const ViewSalesPerson = () => {
       <div className="flex md:flex-row gap-5 flex-col justify-between items-center bg-white shadow rounded-lg p-6">
         <div className="flex md:flex-row flex-col items-center gap-4">
           <img
-            src={salespersonData?.salesperson?.photo || "https://via.placeholder.com/100"}
-            alt={salespersonData?.salesperson?.name}
+            src={salesperson?.photo || "https://via.placeholder.com/100"}
+            alt={salesperson?.name}
             className="w-20 h-20 rounded-full object-cover"
           />
           <div>
-            <h2 className="text-xl font-semibold">{salespersonData?.salesperson?.name}</h2>
-            <p className="text-gray-600">{salespersonData?.salesperson?.email}</p>
-            <p className="text-gray-600">{salespersonData?.salesperson?.phone}</p>
-            <p className="text-sm text-gray-500">Employee ID: {salespersonData?.salesperson?.employeeId}</p>
-            <p className="text-sm text-gray-500">Created: {new Date(salespersonData?.salesperson?.createdAt).toLocaleDateString()}</p>
+            <h2 className="text-xl font-semibold">{salesperson?.name}</h2>
+            <p className="text-gray-600">{salesperson?.email}</p>
+            <p className="text-gray-600">{salesperson?.phone}</p>
+            <p className="text-sm text-gray-500">Employee ID: {salesperson?.employeeId}</p>
+            <p className="text-sm text-gray-500">Created: {new Date(salesperson?.createdAt).toLocaleDateString()}</p>
           </div>
         </div>
         <div className="flex flex-col items-center gap-2">
-          {salespersonData?.salesperson?.status === 'active' ? (
+          {salesperson?.status === 'active' ? (
             <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold flex items-center gap-1">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               Active
@@ -208,7 +257,7 @@ const ViewSalesPerson = () => {
             onClick={toggleSalespersonStatus}
             disabled={toggleLoading}
             className={`text-xs px-2 py-1 rounded transition-colors ${
-              salespersonData?.salesperson?.status === 'active'
+              salesperson?.status === 'active'
                 ? 'bg-red-50 text-red-600 hover:bg-red-100'
                 : 'bg-green-50 text-green-600 hover:bg-green-100'
             } ${toggleLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -224,7 +273,7 @@ const ViewSalesPerson = () => {
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <p className="text-gray-500 text-sm">Referral Code</p>
-            <p className="text-xl font-mono font-bold text-blue-600">{salesperson.referralCode}</p>
+            <p className="text-xl font-mono font-bold text-blue-600">{salesperson?.referralCode}</p>
           </div>
           <div>
             <p className="text-gray-500 text-sm">Sales Link Status</p>
@@ -238,10 +287,10 @@ const ViewSalesPerson = () => {
             <p className="text-gray-500 text-sm">Universal Referral Link</p>
             <div className="flex items-center gap-3 mt-1">
               <p className="flex-1 text-sm font-mono bg-gray-100 px-3 py-2 rounded border break-all">
-                {salesperson.universalReferralLink}
+                {salesperson?.universalReferralLink}
               </p>
               <button
-                onClick={() => copyToClipboard(salesperson.universalReferralLink)}
+                onClick={() => copyToClipboard(salesperson?.universalReferralLink)}
                 className="p-2 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
                 title="Copy link"
               >
@@ -259,29 +308,29 @@ const ViewSalesPerson = () => {
         <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">{analytics.summary.totalClicks}</p>
+            <p className="text-2xl font-bold text-blue-600">{salesperson?.metrics?.totalClicks || 0}</p>
             <p className="text-gray-500 text-sm">Total Clicks</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-green-600">{analytics.summary.totalConversions}</p>
+            <p className="text-2xl font-bold text-green-600">{salesperson?.metrics?.totalConversions || 0}</p>
             <p className="text-gray-500 text-sm">Total Conversions</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-purple-600">₹{analytics.summary.totalRevenue}</p>
+            <p className="text-2xl font-bold text-purple-600">₹{salesperson?.metrics?.totalRevenue || 0}</p>
             <p className="text-gray-500 text-sm">Total Revenue</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-orange-600">{analytics.summary.conversionRate}</p>
+            <p className="text-2xl font-bold text-orange-600">{analytics?.performance?.conversionRate || '0%'}</p>
             <p className="text-gray-500 text-sm">Conversion Rate</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-6 mt-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-indigo-600">{analytics.summary.totalProducts}</p>
-            <p className="text-gray-500 text-sm">Total Products</p>
+            <p className="text-2xl font-bold text-indigo-600">{analytics?.orders?.total || 0}</p>
+            <p className="text-gray-500 text-sm">Total Orders</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-teal-600">₹{analytics.summary.averageOrderValue}</p>
+            <p className="text-2xl font-bold text-teal-600">₹{analytics?.revenue?.averageOrderValue || 0}</p>
             <p className="text-gray-500 text-sm">Average Order Value</p>
           </div>
         </div>
@@ -318,92 +367,28 @@ const ViewSalesPerson = () => {
         )}
       </div>
 
-      {/* Recent Orders */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-4">Recent Orders</h3>
-        {recentOrders && recentOrders.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Order ID</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Customer</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Amount</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Status</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {recentOrders.map((order, index) => (
-                  <tr key={index}>
-                    <td className="py-2 px-4 text-sm font-mono">{order.orderId}</td>
-                    <td className="py-2 px-4 text-sm">{order.customerName}</td>
-                    <td className="py-2 px-4 text-sm">₹{order.amount}</td>
-                    <td className="py-2 px-4 text-sm">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-2 px-4 text-sm">{new Date(order.date).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center py-4">No recent orders available</p>
-        )}
-      </div>
-
       {/* Orders by Status */}
-      {analytics.ordersByStatus && Object.keys(analytics.ordersByStatus).length > 0 && (
+      {analytics?.orders && (
         <div className="bg-white shadow rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">Orders by Status</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(analytics.ordersByStatus).map(([status, count]) => (
-              <div key={status} className="text-center p-4 bg-gray-50 rounded">
-                <p className="text-2xl font-bold">{count}</p>
-                <p className="text-gray-500 text-sm capitalize">{status}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-gray-50 rounded">
+              <p className="text-2xl font-bold">{analytics.orders.total}</p>
+              <p className="text-gray-500 text-sm">Total Orders</p>
+            </div>
+            <div className="text-center p-4 bg-yellow-50 rounded">
+              <p className="text-2xl font-bold text-yellow-600">{analytics.orders.pending}</p>
+              <p className="text-gray-500 text-sm">Pending</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded">
+              <p className="text-2xl font-bold text-green-600">{analytics.orders.successful}</p>
+              <p className="text-gray-500 text-sm">Successful</p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Monthly Performance */}
-      {analytics.monthlyPerformance && analytics.monthlyPerformance.length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4">Monthly Performance</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Month</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Clicks</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Conversions</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Revenue</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {analytics.monthlyPerformance.map((month, index) => (
-                  <tr key={index}>
-                    <td className="py-2 px-4 text-sm">{month.month}</td>
-                    <td className="py-2 px-4 text-sm">{month.clicks}</td>
-                    <td className="py-2 px-4 text-sm">{month.conversions}</td>
-                    <td className="py-2 px-4 text-sm">₹{month.revenue}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Recent Sales Section - Add this before Monthly Performance */}
+      {/* Recent Sales Section */}
       <div className="bg-white shadow rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <FaShoppingBag className="text-blue-500" /> Recent Sales
@@ -520,9 +505,84 @@ const ViewSalesPerson = () => {
           </div>
         )}
       </div>
+
+      {/* Password Reset Modal */}
+      {passwordResetModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-lg">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 pb-4 border-b">
+              <h2 className="text-xl font-bold">Reset Password</h2>
+              <IoClose
+                onClick={() => {
+                  setPasswordResetModal(false);
+                  setNewPassword("");
+                }}
+                className="cursor-pointer text-2xl hover:text-red-500"
+              />
+            </div>
+            
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="mb-4">
+                <p className="text-gray-600 mb-4">
+                  Reset password for <strong>{salesperson?.name}</strong>
+                </p>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (minimum 6 characters)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+              
+              <div className="text-sm text-gray-500 mb-4">
+                <p>• Password must be at least 6 characters long</p>
+                <p>• The salesperson will need to use this new password to login</p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex gap-3 justify-end p-6 pt-4 border-t bg-gray-50">
+              <button
+                onClick={() => {
+                  setPasswordResetModal(false);
+                  setNewPassword("");
+                }}
+                className="px-4 py-2 border rounded hover:bg-gray-50 bg-white"
+                disabled={resetLoading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={resetPassword}
+                disabled={resetLoading || !newPassword.trim()}
+                className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {resetLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Resetting...
+                  </>
+                ) : (
+                  <>
+                    <FaKey className="text-sm" />
+                    Reset Password
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
 
 export default ViewSalesPerson;
 

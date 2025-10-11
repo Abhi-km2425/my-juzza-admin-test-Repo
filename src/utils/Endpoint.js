@@ -51,5 +51,13 @@ export const GetSalesPersonProductsRoute = '/api/admin/salesperson'
 export const UpdateSalesPersonProductsRoute = '/api/admin/salesperson'
 export const GetSalesPersonRecentSalesRoute = '/api/admin/salesperson'
 export const ToggleSalesPersonStatusRoute = '/api/admin/salesperson'
+export const ResetSalesPersonPasswordRoute = '/api/admin/salesperson'
+
+// salesperson auth
+export const salespersonLoginRoute = "/api/salesperson/auth/login";
+export const salespersonLogoutRoute = "/api/salesperson/auth/logout";
+export const salespersonDashboardRoute = "/api/salesperson/me";
+export const salespersonUpdatePasswordRoute = "/api/salesperson/me/password";
+export const salespersonRecentSalesRoute = "/api/salesperson/me/recent-sales";
 
 

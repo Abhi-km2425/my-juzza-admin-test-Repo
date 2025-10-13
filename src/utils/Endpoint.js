@@ -15,7 +15,7 @@ export const UpdateProducts = "/api/admin/update-product";
 export const UnlistProducts = "/api/admin/unlist-product"; //=.Product IId
 export const ListProducts = "/api/admin/list-product"; //=.Product IId
 export const DeleteProducts = "/api/admin/delete-product"; //=.Product IId
-export const GetProductAnalytics = "/api/admin/product-analytics";
+export const GetProductAnalytics = "/api/admin/product";
 
 
 export const GetCategory = "/api/admin/categories";
@@ -45,9 +45,19 @@ export const CouponStatusRoute = '/api/admin/coupon/status'
 
 //salesperson
 export const AddSalesPersonRoute = '/api/admin/salesperson'
-export const GetallSalesPersonRoute = '/api/admin/salespersons'
+export const GetallSalesPersonRoute = '/api/admin/salesperson/list'
 export const GetSalesPersonRoute = '/api/admin/salesperson'
 export const GetSalesPersonProductsRoute = '/api/admin/salesperson'
 export const UpdateSalesPersonProductsRoute = '/api/admin/salesperson'
+export const GetSalesPersonRecentSalesRoute = '/api/admin/salesperson'
+export const ToggleSalesPersonStatusRoute = '/api/admin/salesperson'
+export const ResetSalesPersonPasswordRoute = '/api/admin/salesperson'
+
+// salesperson auth
+export const salespersonLoginRoute = "/api/salesperson/auth/login";
+export const salespersonLogoutRoute = "/api/salesperson/auth/logout";
+export const salespersonDashboardRoute = "/api/salesperson/me";
+export const salespersonUpdatePasswordRoute = "/api/salesperson/me/password";
+export const salespersonRecentSalesRoute = "/api/salesperson/me/recent-sales";
 
 

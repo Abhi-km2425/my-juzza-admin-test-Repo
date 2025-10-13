@@ -23,7 +23,6 @@ const SalesPersonTable = () => {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
-  const [regionFilter, setRegionFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
   // Fetch Salespersons
@@ -32,8 +31,8 @@ const SalesPersonTable = () => {
       try {
         setLoading(true);
         const res = await axios.get(`${GetallSalesPersonRoute}?page=${currentPage}&limit=10`);
-        setData(res?.data?.salespersons || []); 
-        setPagination(res?.data?.pagination || {});
+        setData(res?.data?.data?.salespersons || []); 
+        setPagination(res?.data?.data?.pagination || {});
       } catch (error) {
         console.error("Error fetching salespersons:", error);
         toast.error(error?.response?.data?.msg || "Failed to load salespersons");
@@ -49,24 +48,16 @@ const SalesPersonTable = () => {
   const filteredData = data.filter((row) => {
     const matchesSearch =
       row.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.email?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesRegion =
-      regionFilter === "All" || row.region === regionFilter;
+      row.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.employeeId?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter === "All" ||
-      (statusFilter === "Active" && row.status) ||
-      (statusFilter === "Inactive" && !row.status);
+      (statusFilter === "Active" && (row.status === "active" || row.status === "true")) ||
+      (statusFilter === "Inactive" && (row.status === "inactive" || row.status === "false"));
 
-    return matchesSearch && matchesRegion && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
-
-  // Toggle status handler
-  const clickDelete = (row) => {
-    toast.info(`Toggling status for ${row.name}`);
-   
-  };
 
   // Page navigation handlers
   const handlePageChange = (page) => {
@@ -91,13 +82,12 @@ const SalesPersonTable = () => {
       <div className="bg-white p-4 rounded-lg shadow flex flex-wrap items-center gap-4">
         <input
           type="text"
-          placeholder="Search by name or email"
+          placeholder="Search by name, email, or employee ID"
           className="border rounded px-3 py-2 w-64"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        
         <select
           className="border rounded px-3 py-2"
           value={statusFilter}
@@ -117,7 +107,10 @@ const SalesPersonTable = () => {
               <th className="py-2 px-4 border-b border-r">Name</th>
               <th className="py-2 px-4 border-b border-r">Email</th>
               <th className="py-2 px-4 border-b border-r">Phone</th>
-             
+              <th className="py-2 px-4 border-b border-r">Employee ID</th>
+              <th className="py-2 px-4 border-b border-r">Referral Code</th>
+              <th className="py-2 px-4 border-b border-r">Clicks</th>
+              <th className="py-2 px-4 border-b border-r">Revenue</th>
               <th className="py-2 px-4 border-b border-r">Status</th>
               <th className="py-2 px-4 border-b border-r">Actions</th>
             </tr>
@@ -126,7 +119,7 @@ const SalesPersonTable = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="6" className="text-center py-4">
+                <td colSpan="9" className="text-center py-4">
                   Loading...
                 </td>
               </tr>
@@ -137,42 +130,43 @@ const SalesPersonTable = () => {
                     {row?.name}
                   </td>
                   <td className="py-2 px-4 border-b border-r">{row?.email}</td>
-                  <td className="py-2 px-4 border-b border-r">{row?.phone}</td>
-                  
-                  <td className="py-2 px-4 border-b border-r">
-                    {row?.status ? "Active" : "Inactive"}
+                  <td className="py-2 px-4 border-b border-r">{row?.phone || 'N/A'}</td>
+                  <td className="py-2 px-4 border-b border-r font-mono text-sm">
+                    {row?.employeeId}
+                  </td>
+                  <td className="py-2 px-4 border-b border-r font-mono text-sm text-blue-600">
+                    {row?.referralCode}
+                  </td>
+                  <td className="py-2 px-4 border-b border-r text-center">
+                    {row?.salesLink?.clicks || row?.metrics?.totalClicks || 0}
+                  </td>
+                  <td className="py-2 px-4 border-b border-r text-center">
+                    ₹{row?.salesLink?.revenue || row?.metrics?.totalRevenue || 0}
                   </td>
                   <td className="py-2 px-4 border-b border-r">
-                    <div className="flex justify-center gap-5 cursor-pointer">
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                      (row?.status === 'active' || row?.status === 'true') 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {(row?.status === 'active' || row?.status === 'true') ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="py-2 px-4 border-b border-r">
+                    <div className="flex justify-center gap-3">
                       <button
-                        className="text-blue-500 underline"
-                        onClick={() =>
-                          navigate(`/admin/salesperson/${row._id}`)
-                        }
+                        className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                        onClick={() => navigate(`/admin/salesperson/${row._id}`)}
                       >
-                        View
+                        View Details
                       </button>
-
-                      <div>
-                        {row?.availability ? (
-                          <MdChecklistRtl
-                            className="text-green-500"
-                            onClick={() => clickDelete(row)}
-                          />
-                        ) : (
-                          <MdFilterListOff
-                            className="text-red-500"
-                            onClick={() => clickDelete(row)}
-                          />
-                        )}
-                      </div>
                     </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4">
+                <td colSpan="9" className="text-center py-4">
                   No Data Available
                 </td>
               </tr>
@@ -201,19 +195,32 @@ const SalesPersonTable = () => {
               Previous
             </button>
             
-            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-3 py-1 rounded border ${
-                  page === pagination.currentPage
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+              let pageNum;
+              if (pagination.totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (pagination.currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (pagination.currentPage >= pagination.totalPages - 2) {
+                pageNum = pagination.totalPages - 4 + i;
+              } else {
+                pageNum = pagination.currentPage - 2 + i;
+              }
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`px-3 py-1 rounded border ${
+                    pageNum === pagination.currentPage
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
             
             <button
               onClick={handleNextPage}

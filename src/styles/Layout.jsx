@@ -10,9 +10,11 @@ import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { RiCoupon3Line } from "react-icons/ri";
 import { RxDashboard } from "react-icons/rx";
 import { TbCategory2 } from "react-icons/tb";
+import { FaKey, FaChartBar } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const sideBar = [
+const adminSideBar = [
   {
     id: 1,
     name: "Dashboard",
@@ -56,10 +58,35 @@ const sideBar = [
     icon: <CiShoppingCart size={23} />,
   },
 ];
+
+const salespersonSideBar = [
+  {
+    id: 1,
+    name: "Dashboard",
+    path: "/salesperson/dashboard",
+    icon: <RxDashboard size={23} />,
+  },
+  {
+    id: 2,
+    name: "Sales Performance",
+    path: "/salesperson/sales-performance",
+    icon: <FaChartBar size={23} />,
+  },
+  {
+    id: 3,
+    name: "Update Password",
+    path: "/salesperson/update-password",
+    icon: <FaKey size={23} />,
+  },
+];
 // ------------------------------------------------------
 
-const Layout = ({children}) => {
+const Layout = ({ children }) => {
   const location = useLocation();
+  const userInfo = useSelector((state) => state?.auth?.userInfo);
+
+  const sideBar =
+    userInfo?.role === "salesperson" ? salespersonSideBar : adminSideBar;
 
   return (
     <div

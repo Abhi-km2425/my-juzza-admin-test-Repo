@@ -1,6 +1,6 @@
 // export const baseUrl = "http://localhost:9000"
-//  export const baseUrl = "https://server.juzafoods.com"
- export const baseUrl = "https://juzza-backend-virid.vercel.app/"
+ export const baseUrl = "https://server.juzafoods.com"
+//  export const baseUrl = "https://juzza-backend-virid.vercel.app/"
 //  export const baseUrl = "https://server1.juzafoods.com"
 
 // auth
@@ -15,7 +15,7 @@ export const UpdateProducts = "/api/admin/update-product";
 export const UnlistProducts = "/api/admin/unlist-product"; //=.Product IId
 export const ListProducts = "/api/admin/list-product"; //=.Product IId
 export const DeleteProducts = "/api/admin/delete-product"; //=.Product IId
-export const GetProductAnalytics = "/api/admin/product-analytics";
+export const GetProductAnalytics = "/api/admin/product";
 
 
 export const GetCategory = "/api/admin/categories";

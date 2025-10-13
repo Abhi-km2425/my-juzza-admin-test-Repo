@@ -49,6 +49,10 @@ const ViewSalesPerson = () => {
     };
 
     fetchSalesperson();
+    
+    // Auto-refresh every 30 seconds
+    const intervalId = setInterval(fetchSalesperson, 30000);
+    return () => clearInterval(intervalId);
   }, [id, axios]);
 
   // Fetch Recent Sales
@@ -56,7 +60,25 @@ const ViewSalesPerson = () => {
     try {
       setRecentSalesLoading(true);
       const response = await axios.get(`${GetSalesPersonRecentSalesRoute}/${id}/recent-sales?page=${page}&limit=10`);
-      setRecentSales(response.data.data.orders || []);
+      
+      // Map the API response to the format needed for the table
+      const orders = response.data.data.orders || [];
+      const mappedOrders = orders.map(order => ({
+        orderId: order._id,
+        customerName: order.userId?.name || 'N/A',
+        customerEmail: order.userId?.email || 'N/A',
+        productName: order.proCartDetail && order.proCartDetail.length > 0 
+          ? order.proCartDetail[0].p_name 
+          : 'N/A',
+        quantity: order.proCartDetail && order.proCartDetail.length > 0 
+          ? order.proCartDetail.reduce((sum, item) => sum + (item.quantity || 1), 0)
+          : 0,
+        amount: order.payment?.amount || '0',
+        status: order.status || 'pending',
+        date: order.createdAt
+      }));
+      
+      setRecentSales(mappedOrders);
       setRecentSalesPagination(response.data.data.pagination || {});
     } catch (error) {
       console.error("Error fetching recent sales:", error);
@@ -334,37 +356,6 @@ const ViewSalesPerson = () => {
             <p className="text-gray-500 text-sm">Average Order Value</p>
           </div>
         </div>
-      </div>
-
-      {/* Product Sales */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-4">Product Sales Performance</h3>
-        {productSales && productSales.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Product</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Sales Count</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Revenue</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Clicks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {productSales.map((product, index) => (
-                  <tr key={index}>
-                    <td className="py-2 px-4 text-sm">{product.productName}</td>
-                    <td className="py-2 px-4 text-sm">{product.salesCount}</td>
-                    <td className="py-2 px-4 text-sm">₹{product.revenue}</td>
-                    <td className="py-2 px-4 text-sm">{product.clicks}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center py-4">No product sales data available</p>
-        )}
       </div>
 
       {/* Orders by Status */}

@@ -54,7 +54,7 @@ const SalesPerformance = () => {
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'completed':
+      case 'delivered':
         return 'bg-green-100 text-green-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
@@ -97,12 +97,11 @@ const SalesPerformance = () => {
                 <thead className="bg-primary text-white">
                   <tr>
                     <th className="py-3 px-4 text-left text-sm font-medium">Order ID</th>
+                    <th className="py-3 px-4 text-left text-sm font-medium">Customer</th>
                     <th className="py-3 px-4 text-left text-sm font-medium">Products</th>
-                    <th className="py-3 px-4 text-left text-sm font-medium">Quantity</th>
                     <th className="py-3 px-4 text-left text-sm font-medium">Amount</th>
                     <th className="py-3 px-4 text-left text-sm font-medium">Payment Method</th>
                     <th className="py-3 px-4 text-left text-sm font-medium">Status</th>
-                    <th className="py-3 px-4 text-left text-sm font-medium">Referral Code</th>
                     <th className="py-3 px-4 text-left text-sm font-medium">Date</th>
                   </tr>
                 </thead>
@@ -110,14 +109,21 @@ const SalesPerformance = () => {
                   {orders.map((order, index) => (
                     <tr key={order._id || index} className="hover:bg-gray-50">
                       <td className="py-3 px-4 text-sm font-mono">
-                        {order._id?.slice(-8).toUpperCase() || 'N/A'}
+                        #{order._id?.slice(-8).toUpperCase() || 'N/A'}
+                      </td>
+                      <td className="py-3 px-4 text-sm">
+                        <div>
+                          <div className="font-medium">{order.userId?.name || 'N/A'}</div>
+                          <div className="text-xs text-gray-500">{order.userId?.email || ''}</div>
+                        </div>
                       </td>
                       <td className="py-3 px-4 text-sm">
                         {order.products && order.products.length > 0 ? (
                           <div className="space-y-1">
                             {order.products.map((product, idx) => (
                               <div key={idx} className="text-xs">
-                                {product.p_name}
+                                <div className="font-medium">{product.p_name}</div>
+                                <div className="text-gray-500">Qty: {product.quantity || 'N/A'}</div>
                               </div>
                             ))}
                           </div>
@@ -125,22 +131,18 @@ const SalesPerformance = () => {
                           'N/A'
                         )}
                       </td>
-                      <td className="py-3 px-4 text-sm text-center">
-                        {order.products?.reduce((total, product) => total + (parseInt(product.quantity) || 0), 0) || 0}
-                      </td>
                       <td className="py-3 px-4 text-sm font-semibold">
                         ₹{order.payment?.amount || 0}
                       </td>
-                      <td className="py-3 px-4 text-sm capitalize">
-                        {order.payment?.method || 'N/A'}
+                      <td className="py-3 px-4 text-sm">
+                        <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium capitalize">
+                          {order.payment?.method || 'N/A'}
+                        </span>
                       </td>
                       <td className="py-3 px-4 text-sm">
                         <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(order.status)}`}>
                           {order.status || 'pending'}
                         </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm font-mono text-blue-600">
-                        {order.referralCode || 'N/A'}
                       </td>
                       <td className="py-3 px-4 text-sm">
                         {new Date(order.createdAt).toLocaleDateString('en-GB')}
@@ -228,23 +230,23 @@ const SalesPerformance = () => {
           <div className="bg-gradient-to-r from-blue-50 to-blue-100 shadow rounded-lg p-6">
             <h3 className="text-lg font-semibold text-blue-800 mb-2">Total Orders</h3>
             <p className="text-3xl font-bold text-blue-900">{pagination.totalOrders}</p>
+            <p className="text-xs text-blue-600 mt-1">Showing page {pagination.currentPage} of {pagination.totalPages}</p>
           </div>
 
           <div className="bg-gradient-to-r from-green-50 to-green-100 shadow rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-green-800 mb-2">Total Revenue</h3>
+            <h3 className="text-lg font-semibold text-green-800 mb-2">Page Revenue</h3>
             <p className="text-3xl font-bold text-green-900">
-              ₹{orders.reduce((sum, order) => sum + (parseFloat(order.payment?.amount) || 0), 0)}
+              ₹{orders.reduce((sum, order) => sum + (parseFloat(order.payment?.amount) || 0), 0).toFixed(2)}
             </p>
+            <p className="text-xs text-green-600 mt-1">Current page total</p>
           </div>
 
-          <div className="bg-gradient-to-r from-purple-50 to-purple-100 shadow rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-purple-800 mb-2">Items Sold</h3>
-            <p className="text-3xl font-bold text-purple-900">
-              {orders.reduce((sum, order) => 
-                sum + (order.products?.reduce((total, product) => 
-                  total + (parseInt(product.quantity) || 0), 0) || 0), 0
-              )}
+          <div className="bg-gradient-to-r from-orange-50 to-orange-100 shadow rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-orange-800 mb-2">Delivered Orders</h3>
+            <p className="text-3xl font-bold text-orange-900">
+              {orders.filter(order => order.status === 'delivered').length}
             </p>
+            <p className="text-xs text-orange-600 mt-1">Successfully delivered</p>
           </div>
         </div>
       )}

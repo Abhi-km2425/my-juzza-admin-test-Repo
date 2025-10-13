@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaChartLine, FaDollarSign, FaMousePointer, FaShoppingCart, FaKey } from "react-icons/fa";
+import { FaChartLine, FaDollarSign, FaMousePointer, FaShoppingCart } from "react-icons/fa";
 import { MdContentCopy } from "react-icons/md";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -160,73 +160,67 @@ const SalespersonDashboard = () => {
         </div>
       </div>
 
-      {/* Product Sales Performance */}
-      {productSales && productSales.length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4">Product Sales Performance</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Product</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Sales Count</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Revenue</th>
-                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Clicks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {productSales.map((product, index) => (
-                  <tr key={index}>
-                    <td className="py-2 px-4 text-sm">{product.productName}</td>
-                    <td className="py-2 px-4 text-sm">{product.salesCount}</td>
-                    <td className="py-2 px-4 text-sm">₹{product.revenue}</td>
-                    <td className="py-2 px-4 text-sm">{product.clicks}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
       {/* Recent Orders */}
-      {recentOrders && recentOrders.length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4">Recent Orders</h3>
+      <div className="bg-white shadow rounded-lg p-6">
+        <h3 className="text-lg font-semibold mb-4">Recent Orders</h3>
+        {recentOrders && recentOrders.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Order ID</th>
                   <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Customer</th>
+                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Product(s)</th>
                   <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Amount</th>
+                  <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Payment</th>
                   <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Status</th>
                   <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {recentOrders.map((order, index) => (
-                  <tr key={index}>
-                    <td className="py-2 px-4 text-sm font-mono">{order.orderId}</td>
-                    <td className="py-2 px-4 text-sm">{order.customerName}</td>
-                    <td className="py-2 px-4 text-sm">₹{order.amount}</td>
+                  <tr key={order._id || index} className="hover:bg-gray-50">
+                    <td className="py-2 px-4 text-sm font-mono">#{order._id?.slice(-8).toUpperCase()}</td>
+                    <td className="py-2 px-4 text-sm">{order.userId?.name || 'N/A'}</td>
+                    <td className="py-2 px-4 text-sm">
+                      {order.products && order.products.length > 0 ? (
+                        <div className="space-y-1">
+                          {order.products.slice(0, 2).map((product, idx) => (
+                            <div key={idx} className="text-xs">{product.p_name}</div>
+                          ))}
+                          {order.products.length > 2 && (
+                            <div className="text-xs text-gray-500">+{order.products.length - 2} more</div>
+                          )}
+                        </div>
+                      ) : 'N/A'}
+                    </td>
+                    <td className="py-2 px-4 text-sm font-semibold">₹{order.payment?.amount || 0}</td>
+                    <td className="py-2 px-4 text-sm capitalize">{order.payment?.method || 'N/A'}</td>
                     <td className="py-2 px-4 text-sm">
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                        order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
                         order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
+                        order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
+                        order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                        'bg-gray-100 text-gray-800'
                       }`}>
                         {order.status}
                       </span>
                     </td>
-                    <td className="py-2 px-4 text-sm">{new Date(order.date).toLocaleDateString()}</td>
+                    <td className="py-2 px-4 text-sm">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <FaShoppingCart className="mx-auto text-4xl mb-2 text-gray-300" />
+            <p>No recent orders yet</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

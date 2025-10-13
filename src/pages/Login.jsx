@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { loginRoute } from "../utils/Endpoint";
+import { loginRoute, salespersonLoginRoute } from "../utils/Endpoint";
 import { setUser } from "../redux/slices/AuthSlicer";
 import { setAccessToken, setRefreshToken } from "../redux/slices/TokenReducer";
 import bgIMge from "../../public/assets/login/cover pic.png";
@@ -17,24 +17,24 @@ const Login = () => {
     email: "",
     password: "",
   });
-  // const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = useSelector((state) => state?.auth?.userInfo);
-  const [pwdtype, setPwdtype] = useState("password")
+  const [pwdtype, setPwdtype] = useState("password");
 
   const togglePwdtype = () => {
     if (pwdtype === "text") {
-      setPwdtype("password")
+      setPwdtype("password");
+    } else if (pwdtype === "password") {
+      setPwdtype("text");
     }
-    else if (pwdtype === "password") {
-      setPwdtype("text")
-    }
-  }
+  };
 
   useEffect(() => {
-    if (userData?.userInfo?.role === "admin") {
+    if (userData?.role === "admin") {
       navigate("/admin/dashboard");
+    } else if (userData?.role === "salesperson") {
+      navigate("/salesperson/dashboard");
     } else {
       navigate("/login");
     }
@@ -63,21 +63,46 @@ const Login = () => {
 
       // Backend call for user Validation
       if (Object.keys(validationError).length === 0) {
+        // Try admin login first
+        try {
+          const adminResponse = await axios.post(loginRoute, user);
 
-        const response = await axios.post(loginRoute, user);
+          console.log("Admin login response", adminResponse?.data);
+          dispatch(setUser(adminResponse.data?.userInfo));
+          dispatch(setAccessToken(adminResponse.data?.accessToken));
+          dispatch(setRefreshToken(adminResponse.data?.refreshToken));
+          toast.success("Successfully Login as Admin");
+          return;
+        } catch (adminError) {
+          // If admin login fails, try salesperson login
+          try {
+            const salespersonResponse = await axios.post(
+              salespersonLoginRoute,
+              user
+            );
 
-        console.log("Login response", response?.data)
-        dispatch(setUser(response.data?.userInfo));
-        dispatch(setAccessToken(response.data?.accessToken));
-        dispatch(setRefreshToken(response.data?.refreshToken));
-
-        toast.success(response?.data?.email && "Successfully Login");
+            console.log("Salesperson login response", salespersonResponse?.data);
+            dispatch(
+              setUser({
+                ...salespersonResponse.data?.data?.salesperson,
+                role: "salesperson",
+              })
+            );
+            dispatch(setAccessToken(salespersonResponse.data?.data?.accessToken));
+            dispatch(setRefreshToken(salespersonResponse.data?.data?.refreshToken));
+            toast.success("Successfully Login as Salesperson");
+            return;
+          } catch (salespersonError) {
+            // Both logins failed
+            throw salespersonError;
+          }
+        }
       }
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.msg);
+      toast.error(error?.response?.data?.msg || "Invalid credentials");
     }
-  }
+  };
 
   // @DSC Input Changes
   const changeHandler = (e) => {
@@ -131,25 +156,22 @@ const Login = () => {
                   </span>
                 )}
 
-                {
-                  pwdtype === "text"
-                    ?
-                    <FaRegEyeSlash
+                {pwdtype === "text" ? (
+                  <FaRegEyeSlash
                     onClick={togglePwdtype}
                     className="absolute top-3 right-3 cursor-pointer "
-                    />
-                    :
-                    <FaRegEye
+                  />
+                ) : (
+                  <FaRegEye
                     onClick={togglePwdtype}
                     className="absolute top-3 right-3 cursor-pointer "
-                    />
-                }
+                  />
+                )}
               </div>
 
               <div className="flex gap-3">
                 <input type="checkbox" className="bg-[#EDEDED] w-4" />
                 <label htmlFor="" className="text-gray-400">
-                  {" "}
                   Remember me
                 </label>
               </div>
@@ -167,7 +189,6 @@ const Login = () => {
         </div>
 
         <div className="w-full h-full hidden md:flex relative top-0  flex-col items-center justify-center">
-
           <img
             src={bgIMge}
             alt="bg-image"
@@ -178,5 +199,6 @@ const Login = () => {
     </div>
   );
 };
+
 
 export default Login;

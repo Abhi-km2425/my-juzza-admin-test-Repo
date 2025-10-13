@@ -14,10 +14,14 @@ import AddSalesPerson from "./pages/salesperson/AddSalesPerson";
 import ProductAnalytics from "./pages/salesperson/ProductAnalytics";
 import SalesPeopleList from "./pages/salesperson/SalesPeopleList";
 import ViewSalesPerson from "./pages/salesperson/ViewSalesPerson";
+import SalespersonDashboard from "./pages/salesperson/SalespersonDashboard";
+import UpdatePassword from "./pages/salesperson/UpdatePassword";
 import UsersList from "./pages/users/UsersList";
 import AdminProtector from "./protectors/AdminProtector";
 import AuthProtector from "./protectors/AuthProtector";
+import SalespersonProtector from "./protectors/SalespersonProtector";
 import Layout from "./styles/Layout";
+import SalesPerformance from "./pages/salesperson/SalesPerformance";
 
 function App() {
 
@@ -46,7 +50,13 @@ function App() {
               <Route path="/admin/order/view/:id/:userid" element={<DetailedView />} />
               <Route path="/admin/coupons" element={<CouponList/>} />
               <Route path="/admin/coupons/add-coupon" element={<AddNewCoupon />} />
+            </Route>
 
+            {/* Salesperson Routes */}
+            <Route path="/" element={<SalespersonProtector />}>
+              <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
+              <Route path="/salesperson/sales-performance" element={<SalesPerformance />} />
+              <Route path="/salesperson/update-password" element={<UpdatePassword />} />
             </Route>
           </Routes>
         </Layout>

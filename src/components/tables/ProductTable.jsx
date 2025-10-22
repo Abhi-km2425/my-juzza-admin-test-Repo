@@ -1,7 +1,7 @@
 import {
   IoCreateOutline
 } from "react-icons/io5";
-import { MdChecklistRtl, MdFilterListOff } from "react-icons/md";
+import { MdChecklistRtl, MdFilterListOff, MdAnalytics } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandler }) => {
@@ -26,8 +26,7 @@ const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandl
           {data?.map((row, i) => (
             <tr
               key={row._id}
-              className="cursor-pointer hover:bg-gray-100"
-              onClick={() => navigate(`/admin/salesperson/product-analytics/${row._id}`)}
+              className="hover:bg-gray-100"
             >
               <td className="py-2 px-4 border-b border-r">
                 {(page - 1) * 10 + i + 1}
@@ -48,30 +47,45 @@ const ProductTable = ({ data, clickEdit, clickDelete, page, PermanentDeleteHandl
                 )}
               </td>
               <td className="py-2 px-4 border-b border-r">
-                {
-                  <div className="flex justify-center gap-5 cursor-pointer">
-                    <IoCreateOutline
-                      className="text-blue-500"
-                      onClick={() => clickEdit(row)}
+                <div className="flex justify-center gap-3 cursor-pointer">
+                  <IoCreateOutline
+                    className="text-blue-500 text-lg hover:scale-110 transition-transform"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clickEdit(row);
+                    }}
+                    title="Edit Product"
+                  />
+
+                  <MdAnalytics
+                    className="text-purple-500 text-lg hover:scale-110 transition-transform"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/admin/products/analytics/${row._id}`);
+                    }}
+                    title="View Analytics"
+                  />
+
+                  {row?.availability ? (
+                    <MdChecklistRtl 
+                      className="text-green-500 text-lg hover:scale-110 transition-transform"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clickDelete(row);
+                      }}
+                      title="Unlist Product"
                     />
-
-                    <div>
-                      {row?.availability ? (
-                        <MdChecklistRtl 
-                          className="text-green-500"
-                          onClick={() => clickDelete(row)}
-                        />
-                      ) : (
-                        <MdFilterListOff
-                          className="text-red-500"
-                          onClick={() => clickDelete(row)}
-                        />
-                      )}
-                    </div>
-
-                  
-                  </div>
-                }
+                  ) : (
+                    <MdFilterListOff
+                      className="text-red-500 text-lg hover:scale-110 transition-transform"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clickDelete(row);
+                      }}
+                      title="List Product"
+                    />
+                  )}
+                </div>
               </td>
             </tr>
           ))}

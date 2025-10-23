@@ -38,6 +38,7 @@ function App() {
             <Route path="/" element={<AdminProtector />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/products" element={<ProductList />} />
+              <Route path="/admin/products/analytics/:id" element={<ProductAnalytics />} />
               <Route path="/admin/salesperson" element={<SalesPeopleList />} />
               <Route path="/admin/salesperson/add" element={<AddSalesPerson />} />
               <Route path="/admin/salesperson/:id" element={<ViewSalesPerson />} />
